@@ -1,0 +1,1271 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<title>AP CS 模擬考</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: exam-room app. Pale header band like the digital AP exam, one focused column for MCQ, a split pane for FRQ, plain tables for the teacher. */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --sunk:#edf1f3; --ink:#16202a; --muted:#55626e; --line:#d4dce2;
+  --band:#cde7ee; --band-ink:#113442;
+  --accent:#1d4f91; --accent-soft:#e2ebf7; --on-accent:#ffffff;
+  --ok:#1a6e3d; --ok-bg:#e4f2e9; --bad:#ad261d; --bad-bg:#fbe5e3; --warn:#7f5000; --warn-bg:#fcefd2;
+  --flag:#b9410b; --code-bg:#f0f3f6;
+  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-q:"Source Serif 4",Georgia,"Noto Serif TC","PMingLiU",serif;
+  --f-code:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161b; --surface:#172028; --sunk:#1e2831; --ink:#e5ecf1; --muted:#9ba9b5; --line:#2d3a45;
+  --band:#15303a; --band-ink:#cbe7f0; --accent:#86b4ef; --accent-soft:#1c2d44; --on-accent:#0c1520;
+  --ok:#72cf98; --ok-bg:#16301f; --bad:#f3958d; --bad-bg:#3b1d1a; --warn:#efc56d; --warn-bg:#382c12;
+  --flag:#f59a5b; --code-bg:#0e1419; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#10161b; --surface:#172028; --sunk:#1e2831; --ink:#e5ecf1; --muted:#9ba9b5; --line:#2d3a45;
+  --band:#15303a; --band-ink:#cbe7f0; --accent:#86b4ef; --accent-soft:#1c2d44; --on-accent:#0c1520;
+  --ok:#72cf98; --ok-bg:#16301f; --bad:#f3958d; --bad-bg:#3b1d1a; --warn:#efc56d; --warn-bg:#382c12;
+  --flag:#f59a5b; --code-bg:#0e1419; color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.6}
+#app{min-height:100%;display:flex;flex-direction:column}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;line-height:1.3;margin:0}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{font-family:var(--f-code);font-size:.9em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre.code{font-family:var(--f-code);font-size:13.5px;line-height:1.55;background:var(--code-bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;overflow-x:auto;margin:0;white-space:pre;tab-size:4}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{padding:4px 12px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+
+/* band header */
+.band{background:var(--band);color:var(--band-ink);border-bottom:1px solid var(--line)}
+.band-in{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:52px;padding-block:8px}
+.brand{font-weight:700;letter-spacing:.02em;display:flex;align-items:baseline;gap:8px}
+.brand small{font-weight:400;opacity:.8}
+.spacer{flex:1}
+.band .btn{background:transparent;border-color:color-mix(in srgb,var(--band-ink) 30%,transparent)}
+
+/* forms */
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+label.f > input,label.f > select,label.f > textarea{font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px}
+textarea.mono, input.mono{font-family:var(--f-code);font-size:13.5px}
+.err{color:var(--bad);font-size:13px;min-height:1.2em}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink)}
+
+/* login */
+.login{flex:1;display:grid;grid-template-columns:minmax(0,420px) minmax(0,380px);gap:48px;justify-content:center;align-content:center;padding-block:48px}
+.login-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.login-card h1{font-size:24px}
+.login-card form{display:flex;flex-direction:column;gap:14px}
+.facts{display:flex;flex-direction:column;gap:18px;padding-top:8px}
+.facts h2{font-family:var(--f-q);font-size:26px;font-weight:600}
+.fact{border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.fact b{font-family:var(--f-code);font-size:13px;color:var(--accent);padding-top:2px}
+.fact span{font-size:14px}
+@media (max-width:820px){.login{grid-template-columns:minmax(0,1fr);gap:28px;padding-block:24px}}
+
+/* home */
+.page{flex:1;width:100%;max-width:980px;margin:0 auto;padding-block:28px;display:flex;flex-direction:column;gap:24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.ecard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.ecard h2{font-size:19px}
+.secs{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.secs div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:4px}
+.hist{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.hist-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-block;font-size:12px;font-weight:500;padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* intro */
+.intro{max-width:720px;margin:0 auto;padding-block:36px;display:flex;flex-direction:column;gap:18px;flex:1}
+.intro h1{font-family:var(--f-q);font-size:30px;font-weight:600}
+.intro ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.sec-table{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.sec-table div{display:grid;grid-template-columns:1fr auto auto;gap:16px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.sec-table div:last-child{border-bottom:0}
+
+/* exam shell */
+.exam{position:fixed;inset:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);display:flex;flex-direction:column;z-index:5}
+.exam-bar .band-in{min-height:56px}
+.timer-box{display:flex;align-items:center;gap:8px}
+.timer{font-family:var(--f-code);font-size:20px;font-weight:600;min-width:5.2ch;text-align:center}
+.timer.low{color:var(--bad)}
+.saved{font-size:12.5px;opacity:.8}
+.qnav{display:flex;gap:6px;overflow-x:auto;padding-block:10px;border-bottom:1px solid var(--line);background:var(--surface);scrollbar-width:thin}
+.qdot{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-size:13px;font-weight:600;cursor:pointer;position:relative;font-variant-numeric:tabular-nums}
+.qdot.ans{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.qdot.cur{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.qdot.mk::after{content:"";position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--flag);border:2px solid var(--surface)}
+.qmain{flex:1;overflow-y:auto;min-height:0}
+.qpane{max-width:860px;margin:0 auto;padding-block:26px;display:flex;flex-direction:column;gap:18px}
+.qhead{display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:8px}
+.qhead h2{font-size:18px;font-weight:700}
+.flagbtn{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+.flagbtn.on{color:var(--flag);border-color:var(--flag);font-weight:600}
+.flagbtn svg{width:13px;height:13px}
+.stem{font-family:var(--f-q);font-size:17px;line-height:1.65;display:flex;flex-direction:column;gap:10px}
+.multi-note{font-size:13.5px;font-weight:600;color:var(--warn);background:var(--warn-bg);padding:4px 10px;border-radius:var(--r);align-self:flex-start}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:flex;align-items:flex-start;gap:14px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;width:100%}
+.choice:hover{border-color:var(--accent)}
+.choice .ltr{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:700;font-size:14px}
+.choice .ct{font-family:var(--f-q);font-size:16px;line-height:1.55;padding-top:2px;min-width:0;overflow-x:auto}
+.choice .ct.mono{font-family:var(--f-code);font-size:14px;white-space:pre}
+.choice.sel{border-color:var(--accent);background:var(--accent-soft)}
+.choice.sel .ltr{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.exam-foot{border-top:1px solid var(--line);background:var(--surface)}
+.exam-foot .band-in{min-height:58px}
+.notice{background:var(--warn-bg);color:var(--warn);padding-block:8px;font-size:14px}
+
+/* frq split */
+.split{flex:1;display:grid;grid-template-columns:var(--left,50%) 10px minmax(0,1fr);min-height:0}
+.pane{overflow-y:auto;min-height:0;min-width:0;padding:22px max(16px,env(safe-area-inset-left,0px)) 28px}
+.pane.left{background:var(--surface)}
+.pane.left .stem{font-size:16px}
+.parts{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.part-q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-family:var(--f-q);font-size:16px}
+.part-q b{font-family:var(--f-ui)}
+.divider{cursor:col-resize;background:var(--sunk);border-left:1px solid var(--line);border-right:1px solid var(--line);display:grid;place-items:center;touch-action:none}
+.divider::after{content:"";width:3px;height:36px;border-radius:2px;background:var(--muted);opacity:.5}
+.ans-block{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.ans-block .lab{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.code-in{width:100%;min-height:240px;resize:vertical;font-family:var(--f-code);font-size:13.5px;line-height:1.55;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;tab-size:4;white-space:pre;overflow:auto}
+.pane.right{background:var(--bg)}
+@media (max-width:760px){.split{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto}.divider{display:none}.pane{overflow:visible}.split{overflow-y:auto;display:block}}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgb(10 18 26 / .45);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border-radius:12px;max-width:640px;width:100%;max-height:min(86vh,900px);overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.modal.wide{max-width:900px}
+.modal h2{font-size:19px}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.ref h3{font-size:14px;margin-top:6px}
+.ref table{border-collapse:collapse;width:100%;font-size:13px}
+.ref td{border-bottom:1px solid var(--line);padding:5px 6px;vertical-align:top}
+.ref td:first-child{font-family:var(--f-code);white-space:nowrap}
+.tblwrap{overflow-x:auto}
+
+/* grading */
+.center{flex:1;display:grid;place-items:center;padding-block:60px;text-align:center}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp 1s linear infinite;margin:0 auto 16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+
+/* report */
+.report{display:flex;flex-direction:column;gap:28px}
+.report section{display:flex;flex-direction:column;gap:12px}
+.report h2{font-size:18px;display:flex;align-items:baseline;gap:10px}
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+.apbox{display:flex;flex-direction:column;align-items:center;gap:2px;padding-right:28px;border-right:1px solid var(--line)}
+.apbox .big{font-family:var(--f-q);font-size:72px;font-weight:600;line-height:1;color:var(--accent)}
+.apbox .lbl{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin:0}
+.stats div{display:flex;flex-direction:column}
+.stats dt{font-size:12.5px;color:var(--muted)}
+.stats dd{margin:0;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:600px){.hero{grid-template-columns:1fr}.apbox{border-right:0;border-bottom:1px solid var(--line);padding:0 0 16px}}
+.bars-wrap{display:flex;flex-direction:column;gap:16px}
+.unit-h{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.bars{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.bar{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 92px;gap:12px;align-items:center;font-size:14px}
+.track{height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
+.fill{height:100%;border-radius:6px;background:var(--accent)}
+.fill.ok{background:var(--ok)} .fill.bad{background:var(--bad)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+@media (max-width:600px){.bar{grid-template-columns:1fr 80px}.bar .track{grid-column:1/-1;grid-row:2}}
+.radar-wrap{display:flex;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.radar{width:100%;max-width:320px;height:auto}
+.advice{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.fb{border:1px solid;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.fb.full{background:var(--ok-bg);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.fb.zero{background:var(--bad-bg);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.fb.part{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.fb.pend{background:var(--sunk);border-color:var(--line)}
+.fb .t{font-weight:700;display:flex;align-items:center;gap:8px}
+.fb .t .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:var(--surface)}
+.fb.full .ic{background:var(--ok)} .fb.zero .ic{background:var(--bad)} .fb.part .ic{background:var(--warn)} .fb.pend .ic{background:var(--muted)}
+.fb p{font-size:14px;color:var(--ink)}
+.fq{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.fq h3{font-size:16px}
+details.ans{font-size:13px}
+details.ans summary{cursor:pointer;color:var(--muted)}
+details.ans pre{margin-top:6px}
+.mcq-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.mrow{border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow summary{display:grid;grid-template-columns:44px 70px minmax(0,1fr) 140px;gap:10px;align-items:center;padding:10px 14px;cursor:pointer;list-style:none;font-size:14px}
+.mrow summary::-webkit-details-marker{display:none}
+.mrow .mk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+.mk.y{background:var(--ok-bg);color:var(--ok)} .mk.n{background:var(--bad-bg);color:var(--bad)}
+.mrow .prev{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
+.mrow .body{padding:4px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.mrow .body .stem{font-size:15px}
+.opt{display:flex;gap:10px;font-size:14px;padding:4px 8px;border-radius:var(--r)}
+.opt.right{background:var(--ok-bg)} .opt.wrong{background:var(--bad-bg)}
+.opt .ct.mono{font-family:var(--f-code);white-space:pre;font-size:13px}
+.expl{font-size:14px;background:var(--sunk);padding:10px 12px;border-radius:var(--r)}
+@media (max-width:600px){.mrow summary{grid-template-columns:36px 54px minmax(0,1fr)}.mrow summary .ansinfo{grid-column:2/-1}}
+
+/* admin */
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{background:none;border:0;border-bottom:2.5px solid transparent;padding:8px 12px;cursor:pointer;font-weight:500;color:var(--band-ink);opacity:.75}
+.tab.on{border-bottom-color:var(--band-ink);opacity:1;font-weight:700}
+.admin{width:100%;max-width:1180px;margin:0 auto;padding-block:24px;display:flex;flex-direction:column;gap:20px;flex:1}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.panel h2{font-size:17px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
+table.t{border-collapse:collapse;width:100%;font-size:14px}
+table.t th{text-align:left;font-size:12.5px;color:var(--muted);font-weight:500;border-bottom:1.5px solid var(--line);padding:8px 10px;white-space:nowrap}
+table.t td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t .prev{max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{background:var(--surface);border:0;padding:6px 14px;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--accent);color:var(--on-accent)}
+.kpis{display:flex;gap:28px;flex-wrap:wrap}
+.kpis div{display:flex;flex-direction:column}
+.kpis b{font-size:22px;font-variant-numeric:tabular-nums}
+.kpis span{font-size:12.5px;color:var(--muted)}
+fieldset.partf{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:90px 90px minmax(0,1fr);gap:10px}
+fieldset.partf legend{font-size:13px;font-weight:600;padding:0 6px}
+fieldset.partf .wide{grid-column:1/-1}
+.grade-edit{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}
+.grade-edit input{width:64px;border:1px solid var(--line);border-radius:var(--r);padding:4px 6px;background:var(--surface)}
+.rubric{background:var(--sunk);border-radius:var(--r);padding:8px 12px}
+.rubric b{color:var(--muted);font-weight:600}
+.rubric-list{margin:4px 0 0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 18px;border-radius:999px;font-size:14px;z-index:60}
+</style>
+
+<div id="app"></div>
+
+<script src="/localdb-shim.js"></script>
+<script>
+"use strict";
+const $app = document.getElementById('app');
+/* Unit/subtopic numbering follows the College Board AP CSA and AP CSP
+   Course and Exam Descriptions (10 CSA units, 5 CSP Big Ideas). Each
+   question's `topic` field holds a subtopic code (e.g. "4.2"); the parent
+   unit is looked up from this structure via topicInfo(). */
+const EXAMS = {
+  CSA:{ name:'AP Computer Science A', short:'AP CSA', ref:'Java Quick Reference', units:[
+    {code:'U1', name:'Primitive Types', subtopics:{'1.1':'Why Programming? Why Java?','1.2':'Variables and Data Types','1.3':'Expressions and Assignment Statements','1.4':'Compound Assignment Operators','1.5':'Casting and Ranges of Variables'}},
+    {code:'U2', name:'Using Objects', subtopics:{'2.1':'Objects: Instances of Classes','2.2':'Creating and Storing Objects (Instantiation)','2.3':'Calling a Void Method','2.4':'Calling a Void Method with Parameters','2.5':'Calling a Non-void Method','2.6':'String Objects: Concatenation and Literals','2.7':'String Methods','2.8':'Wrapper Classes: Integer and Double','2.9':'Using the Math Class'}},
+    {code:'U3', name:'Boolean Expressions and if Statements', subtopics:{'3.1':'Boolean Expressions','3.2':'if Statements and Control Flow','3.3':'if-else Statements','3.4':'else if Statements','3.5':'Compound Boolean Expressions','3.6':'Equivalent Boolean Expressions','3.7':'Comparing Objects'}},
+    {code:'U4', name:'Iteration', subtopics:{'4.1':'while Loops','4.2':'for Loops','4.3':'Developing Algorithms Using Strings'}},
+    {code:'U5', name:'Writing Classes', subtopics:{'5.1':'Anatomy of a Class','5.2':'Constructors','5.3':'Documentation with Comments','5.4':'Accessor Methods','5.5':'Mutator Methods','5.6':'Writing Methods','5.7':'Static Variables and Methods','5.8':'Scope and Access','5.9':'this Keyword'}},
+    {code:'U6', name:'Array', subtopics:{'6.1':'Array Creation and Access','6.2':'Traversing Arrays','6.3':'Enhanced for Loop for Array Traversal'}},
+    {code:'U7', name:'ArrayList', subtopics:{'7.1':'Introduction to ArrayList','7.2':'ArrayList Methods','7.3':'Traversing ArrayLists','7.4':'Developing Algorithms Using ArrayLists','7.5':'Searching','7.6':'Sorting'}},
+    {code:'U8', name:'2D Array', subtopics:{'8.1':'2D Arrays','8.2':'Traversing 2D Arrays'}},
+    {code:'U9', name:'Inheritance', subtopics:{'9.1':'Superclasses and Subclasses','9.2':'Writing Constructors for Subclasses','9.3':'Overriding Methods','9.4':'super Keyword','9.5':'Polymorphism','9.6':'The Object Superclass'}},
+    {code:'U10', name:'Recursion', subtopics:{'10.1':'Recursion','10.2':'Recursive Searching and Sorting'}},
+  ]},
+  CSP:{ name:'AP Computer Science Principles', short:'AP CSP', ref:'Exam Reference Sheet', units:[
+    {code:'BI1', name:'Creative Development', subtopics:{'1.1':'Collaboration','1.2':'Program Function and Purpose','1.3':'Program Design and Development','1.4':'Identifying and Correcting Errors','1.5':'Documentation','1.6':'Intellectual Property'}},
+    {code:'BI2', name:'Data', subtopics:{'2.1':'Binary Numbers','2.2':'Data Compression','2.3':'Extracting Information from Data','2.4':'Using Programs with Data','2.5':'Insight from Data'}},
+    {code:'BI3', name:'Algorithms and Programming', subtopics:{'3.1':'Variables and Assignments','3.2':'Data Abstraction','3.3':'Mathematical Expressions','3.4':'Strings','3.5':'Boolean Expressions','3.6':'Conditionals','3.7':'Nested Conditionals','3.8':'Iteration','3.9':'Developing Algorithms','3.10':'Lists','3.11':'Binary Search','3.12':'Calling Procedures','3.13':'Developing Procedures','3.14':'Libraries','3.15':'Random Values','3.16':'Simulations','3.17':'Algorithmic Efficiency','3.18':'Undecidable Problems'}},
+    {code:'BI4', name:'Computer Systems and Networks', subtopics:{'4.1':'The Internet','4.2':'Fault Tolerance','4.3':'Parallel and Distributed Computing'}},
+    {code:'BI5', name:'Impact of Computing', subtopics:{'5.1':'Beneficial and Harmful Effects','5.2':'Digital Divide','5.3':'Computing Bias','5.4':'Crowdsourcing','5.5':'Legal and Ethical Concerns','5.6':'Safe Computing'}},
+  ]}
+};
+const DEFAULT_CFG = { CSA:{mcqMin:90, frqMin:90}, CSP:{mcqMin:90} };
+const LET = 'ABCDEFGH';
+let db=null, usr=null, sample=null, canEdit=false;
+
+const S = {
+  ready:false, offline:false, view:'login', msg:'', notice:'',
+  student:null, myResults:[], myPapers:[], result:null, pendingPaper:null,
+  idx:0, fidx:0, hideTimer:false, modal:null, saved:'', left:'50%',
+  Q:{}, qlist:[], cfg:JSON.parse(JSON.stringify(DEFAULT_CFG)),
+  students:[], results:[], examPapers:[],
+  admin:{ tab:'results', exam:'CSA', sec:'mcq', filter:'all', edit:null, detail:null, gradeBusy:false, paperEdit:null, paperSec:'mcq', paperQFilter:'', paperSFilter:'', resultSel:[] }
+};
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(t){
+  if(!t) return '';
+  return String(t).split(/\n{2,}/).map(p => '<p>' + esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>') + '</p>').join('');
+}
+const codeBlock = c => c ? `<pre class="code">${esc(c)}</pre>` : '';
+function rubricList(rubric){
+  const lines = String(rubric||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length) return '';
+  return `<div class="rubric"><b class="small">評分標準</b><ul class="rubric-list">${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></div>`;
+}
+const now = () => Date.now();
+const pad = n => String(n).padStart(2,'0');
+const clock = ms => { const s=Math.ceil(ms/1000); const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h? h+':'+pad(m) : m) + ':' + pad(x); };
+const hhmm = (t=now()) => { const d=new Date(t); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const dt = t => t ? new Date(t).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}) : '—';
+function topicInfo(exam, code){
+  for(const u of (EXAMS[exam]?.units||[])){ if(u.subtopics[code]) return {unit:u, name:u.subtopics[code]}; }
+  return null;
+}
+const topicName = (exam,code) => { const info=topicInfo(exam,code); return info ? `${code} ${info.name}` : (code || '未分類'); };
+const ansArr = a => Array.isArray(a) ? a.slice().sort() : (a ? String(a).split(/[,\s]+/).filter(Boolean).map(x=>x.toUpperCase()).sort() : []);
+const same = (a,b) => { const x=ansArr(a), y=ansArr(b); return x.length>0 && x.length===y.length && x.every((v,i)=>v===y[i]); };
+function apEst(exam,pct){ const t = exam==='CSA' ? [70,57,44,33] : [75,62,47,35]; return pct>=t[0]?5:pct>=t[1]?4:pct>=t[2]?3:pct>=t[3]?2:1; }
+function qFor(exam,sec){ return S.qlist.filter(q=>q.exam===exam && q.section===sec).sort((a,b)=>(a.order||0)-(b.order||0)); }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function randomMcqIds(ex, n){ const pool=qFor(ex,'mcq'); return shuffle(pool).slice(0, Math.min(n, pool.length)).map(q=>q.id); }
+function randomFrqIds(ex){
+  const byTopic={}; for(const q of qFor(ex,'frq')){ (byTopic[q.topic||'?']=byTopic[q.topic||'?']||[]).push(q); }
+  return Object.values(byTopic).map(group=>shuffle(group)[0].id);
+}
+function paperFor(id){ return S.examPapers.find(p=>p.id===id) || S.myPapers.find(p=>p.id===id) || null; }
+async function hashPw(name,pw){
+  const txt = 'apmock|' + name.trim() + '|' + pw;
+  try{ const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt)); return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  catch(e){ let h=5381; for(const ch of txt) h=((h<<5)+h+ch.charCodeAt(0))|0; return 'd'+(h>>>0).toString(16); }
+}
+let toastT=null;
+function toast(msg){ let el=document.querySelector('.toast'); if(!el){ el=document.createElement('div'); el.className='toast'; el.setAttribute('role','status'); document.body.appendChild(el);} el.textContent=msg; clearTimeout(toastT); toastT=setTimeout(()=>el.remove(),2600); }
+function dbErr(e){ const c=e?.code; if(c==='quota_exceeded') return '資料庫已滿，請刪除部分舊紀錄。'; if(c==='invalid_argument') return '沒有寫入權限或資料格式有誤。'; if(c==='revoked'||c==='not_granted') return '目前無法存取考試資料庫。'; return '連線不穩，請稍後再試。'; }
+function csvEscape(v){ const s=v==null?'':String(v); return /[",\r\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function csvStringify(rows){ return rows.map(r=>r.map(csvEscape).join(',')).join('\r\n'); }
+function csvParse(text){
+  const s=String(text||'').replace(/^﻿/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows=[]; let row=[], field='', inQ=false;
+  for(let i=0;i<s.length;i++){ const c=s[i];
+    if(inQ){ if(c==='"'){ if(s[i+1]==='"'){ field+='"'; i++; } else inQ=false; } else field+=c; }
+    else if(c==='"') inQ=true;
+    else if(c===','){ row.push(field); field=''; }
+    else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+    else field+=c; }
+  if(field!=='' || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>!(r.length===1 && r[0].trim()===''));
+}
+function filterRows(tbodyId, text){
+  const q=text.trim().toLowerCase(); const tbody=document.getElementById(tbodyId); if(!tbody) return;
+  [...tbody.children].forEach(tr=>{ tr.style.display = (!q || tr.textContent.toLowerCase().includes(q)) ? '' : 'none'; });
+}
+function downloadTextFile(filename, text, mime){
+  const blob=new Blob(['﻿'+text], {type:(mime||'text/csv')+';charset=utf-8'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+const FLAG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1v14M3 2h9l-2 3.5L12 9H3" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+
+/* ---------- scoring ---------- */
+function scoreMcq(r){
+  let correct=0,total=0; const byTopic={};
+  for(const id of (r.qids?.mcq||[])){
+    const q=S.Q[id]; if(!q) continue;
+    total++; const ok = same(r.mcqAnswers?.[id], q.answer); if(ok) correct++;
+    const t=q.topic||'?'; byTopic[t]=byTopic[t]||{c:0,t:0}; byTopic[t].t++; if(ok) byTopic[t].c++;
+  }
+  return {correct,total,byTopic};
+}
+function summarize(r){
+  const m = scoreMcq(r); const mp = m.total ? m.correct/m.total : 0;
+  let pts=0,max=0,graded=true;
+  for(const id of (r.qids?.frq||[])){ const q=S.Q[id]; const g=(r.frqGrades||{})[id]; for(const p of (q?.parts||[])){ max+=Number(p.points)||0; const gp=g?.[p.label]; if(gp && Number.isFinite(gp.score)) pts+=gp.score; else graded=false; } }
+  const hasFrq = (r.qids?.frq||[]).length>0;
+  let comp = r.exam==='CSA' && hasFrq ? (graded ? mp*55 + (max? pts/max:0)*45 : null) : mp*100;
+  return { mcqCorrect:m.correct, mcqTotal:m.total, mcqPct:Math.round(mp*1000)/10, byTopic:m.byTopic, frqPts:pts, frqMax:max, hasFrq, frqGraded:graded,
+    composite: comp==null?null:Math.round(comp*10)/10, ap: comp==null?null:apEst(r.exam,comp) };
+}
+
+/* ---------- boot ---------- */
+(async () => {
+  render();
+  const c = window.claude;
+  if(!c || typeof c.use!=='function'){ S.offline=true; S.ready=true; render(); return; }
+  [db, usr, sample] = await Promise.all([c.use('db'), c.use('user'), c.use('sample')]);
+  canEdit = usr ? await usr.canEdit() : false;
+  if(canEdit && sessionStorage.getItem('apcs-go-admin')){ sessionStorage.removeItem('apcs-go-admin'); S.view='admin'; }
+  if(!db){ S.offline=true; S.ready=true; render(); return; }
+  db.collection('questions').onSnapshot(snap => {
+    S.qlist = snap.docs.map(d => ({id:d.id, ...d.data()})); S.Q = {}; S.qlist.forEach(q => S.Q[q.id]=q);
+    S.ready=true; softRender();
+  }, e => { S.msg=dbErr(e); S.ready=true; softRender(); });
+  db.doc('config/exams').onSnapshot(s => { if(s.exists){ const d=s.data(); S.cfg = {CSA:{...DEFAULT_CFG.CSA,...(d.CSA||{})}, CSP:{...DEFAULT_CFG.CSP,...(d.CSP||{})}}; softRender(); } }, ()=>{});
+  if(canEdit){
+    db.collection('students').onSnapshot(s => { S.students = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.cls||'').localeCompare(b.cls||'')||a.name.localeCompare(b.name)); softRender(); }, ()=>{});
+    db.collection('results').onSnapshot(s => { S.results = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.startedAt||0)-(a.startedAt||0)); softRender(); }, ()=>{});
+    db.collection('examPapers').onSnapshot(s => { S.examPapers = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); softRender(); }, ()=>{});
+  }
+  render();
+})();
+
+function isTyping(){ const a=document.activeElement; return a && ['INPUT','TEXTAREA','SELECT'].includes(a.tagName); }
+function softRender(){
+  if(S.view==='admin' && (S.admin.edit || isTyping())) return;
+  if(['login','home','admin','result'].includes(S.view) && !S.modal) render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  let h='';
+  switch(S.view){
+    case 'login': h=vLogin(); break;
+    case 'home': h=vHome(); break;
+    case 'intro': h=vIntro(); break;
+    case 'mcq': h=vMcq(); break;
+    case 'frqGate': h=vFrqGate(); break;
+    case 'frq': h=vFrq(); break;
+    case 'grading': h=vGrading(); break;
+    case 'result': h=vResultPage(); break;
+    case 'admin': h=vAdmin(); break;
+  }
+  $app.innerHTML = h + (S.modal ? vModal() : '');
+  if(S.view==='mcq'||S.view==='frq') tick();
+  const cur=document.querySelector('.qdot.cur'); if(cur) cur.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+
+function bandSimple(title, right=''){
+  return `<header class="band"><div class="band-in gut"><div class="brand">AP CS 模擬考 <small>${esc(title)}</small></div><div class="spacer"></div>${right}</div></header>`;
+}
+
+function vLogin(){
+  const facts = `<aside class="facts">
+    <h2>正式考試的節奏，提早練習</h2>
+    <div class="fact"><b>CSA</b><span>Section I 選擇題 ${S.cfg.CSA.mcqMin} 分鐘，接著 Section II 問答題（Java 程式撰寫）${S.cfg.CSA.frqMin} 分鐘。</span></div>
+    <div class="fact"><b>CSP</b><span>選擇題 ${S.cfg.CSP.mcqMin} 分鐘，含單選與「選出兩個答案」題型。</span></div>
+    <div class="fact"><b>成績</b><span>交卷後立即顯示分數、各單元答對率與 AP 估計分數；問答題由 AI 依評分標準逐小題給分。</span></div>
+  </aside>`;
+  let body;
+  if(S.offline) body = `<section class="login-card"><h1>無法連線</h1><p class="muted">這個考試系統需要在 Claude 中開啟，才能讀取考生資料與題庫。請使用考官提供的連結開啟。</p></section>`;
+  else body = `<section class="login-card">
+      <div><h1>考生登入</h1><p class="muted small">請輸入考官發給你的姓名與密碼。</p></div>
+      <form data-act="login" autocomplete="off">
+        <label class="f">姓名<input id="lg-name" name="name" required autocomplete="username"></label>
+        <label class="f">密碼<input id="lg-pw" name="pw" type="password" required autocomplete="current-password"></label>
+        <p class="err" role="alert">${esc(S.msg)}</p>
+        <button class="btn primary" ${S.ready?'':'disabled'}>${S.ready?'進入考試':'連線中…'}</button>
+      </form>
+    </section>`;
+  const right = canEdit ? `<button class="btn sm" data-act="goAdmin">考官後台</button><button class="btn sm ghost" data-act="teacherLogout">登出考官</button>` : `<button class="btn sm ghost" data-act="teacherLogin">考官登入</button>`;
+  return bandSimple('考生入口', right) + `<main class="login gut">${body}${facts}</main>`;
+}
+
+function vHome(){
+  const st=S.student;
+  const cards = S.myPapers.map(paper => {
+    const mine=S.myResults.filter(r=>r.paperId===paper.id);
+    const active=mine.find(r=>r.status==='mcq'||r.status==='frqReady'||r.status==='frq');
+    const nM=(paper.mcqIds||[]).length, nF=(paper.frqIds||[]).length;
+    const hist = mine.filter(r=>r!==active).slice(0,4).map(r=>{
+      const s=r.summary; const label = r.status==='done' ? `綜合 ${s?.composite ?? '—'}% · AP ${s?.ap ?? '—'}` : (r.status==='pending'||r.status==='grading' ? '問答題待批改' : '');
+      return `<div class="hist-row"><span class="num muted">${dt(r.startedAt)}</span><span>${label}</span><button class="linkbtn" data-act="viewMine" data-id="${r.id}">查看結果</button></div>`;
+    }).join('');
+    return `<article class="ecard">
+      <h2>${esc(paper.name)} <span class="chip">${EXAMS[paper.exam].short}</span></h2>
+      <div class="secs"><div><span>Section I · 選擇題 ${nM} 題</span><span class="num">${paper.mcqMin} 分鐘</span></div>
+      ${nF?`<div><span>Section II · 問答題 ${nF} 題</span><span class="num">${paper.frqMin} 分鐘</span></div>`:''}</div>
+      ${hist?`<div class="hist"><b class="small">過去紀錄</b>${hist}</div>`:''}
+      <div class="row">${active ? `<button class="btn primary" data-act="resume" data-id="${active.id}">繼續作答（${active.status==='mcq'?'選擇題':active.status==='frqReady'?'準備開始問答題':'問答題'}）</button>`
+        : `<button class="btn primary" data-act="intro" data-id="${paper.id}" ${nM?'':'disabled'}>${mine.length?'再考一次':'開始考試'}</button>`}
+        ${nM?'':'<span class="small muted">考卷尚未設定題目</span>'}</div>
+    </article>`;
+  }).join('');
+  return bandSimple('考生：' + st.name, `<button class="btn sm" data-act="logout">登出</button>`) +
+    `<main class="page gut"><div><h1 style="font-size:24px">${esc(st.name)}，你好</h1><p class="muted">選擇要參加的模擬考。考試開始後計時不會暫停；中途離開可用同一組帳密回來繼續作答。</p></div>
+    ${S.msg?`<p class="err">${esc(S.msg)}</p>`:''}
+    ${S.myPapers.length?`<div class="cards">${cards}</div>`:'<div class="empty">目前沒有可以參加的考試，請洽老師。</div>'}</main>`;
+}
+
+function vIntro(){
+  const paper=paperFor(S.pendingPaper); if(!paper) return vHome();
+  const ex=paper.exam, nF=(paper.frqIds||[]).length;
+  return bandSimple(EXAMS[ex].short, `<button class="btn sm" data-act="home">返回</button>`) + `<main class="intro gut">
+    <h1>${esc(paper.name)}</h1>
+    <div class="sec-table">
+      <div><b>Section I</b><span>選擇題 ${(paper.mcqIds||[]).length} 題</span><span class="num">${paper.mcqMin} 分鐘</span></div>
+      ${nF?`<div><b>Section II</b><span>問答題 ${nF} 題（撰寫 Java 程式）</span><span class="num">${paper.frqMin} 分鐘</span></div>`:''}
+    </div>
+    <ol>
+      <li>按下「開始」後立即計時，時間到會自動交卷。</li>
+      <li>題目上方的題號列可以跳題；不確定的題目按「標記」稍後再回來檢查。</li>
+      <li>答案會自動儲存。網路中斷或關閉頁面後，以同一組姓名密碼登入即可繼續。</li>
+      ${nF?'<li>選擇題交卷後就無法回頭修改；接著會先看到問答題的開始畫面，按「開始」才會進入計時。</li><li>問答題請直接寫 Java 程式碼，可使用右上角的 Java Quick Reference。</li>':'<li>部分題目要選出兩個答案，題目會特別標示。可使用右上角的 Exam Reference Sheet。</li>'}
+    </ol>
+    <div class="row"><button class="btn primary" data-act="start">開始考試</button><button class="btn" data-act="home">稍後再考</button></div>
+  </main>`;
+}
+
+function vFrqGate(){
+  const r=S.result;
+  return bandSimple(EXAMS[r.exam].short, `<span class="small">${esc(S.student?.name||'')}</span>`) + `<main class="intro gut">
+    <h1>Section I 已交卷</h1>
+    <p class="muted">選擇題已經交卷，分數會在全部考完後一起顯示。準備好之後再開始 Section II，開始後才會計時。</p>
+    <div class="sec-table"><div><b>Section II</b><span>問答題 ${(r.qids.frq||[]).length} 題（撰寫 Java 程式）</span><span class="num">${r.frqMin} 分鐘</span></div></div>
+    <ol>
+      <li>按下「開始」後立即計時，時間到會自動交卷。</li>
+      <li>問答題請直接寫 Java 程式碼，可使用右上角的 Java Quick Reference。</li>
+      <li>答案會自動儲存。網路中斷或關閉頁面後，以同一組姓名密碼登入即可繼續（會停在這一頁，不會幫你自動開始計時）。</li>
+    </ol>
+    <div class="row"><button class="btn primary" data-act="startFrq">開始 Section II</button></div>
+  </main>`;
+}
+
+function examBar(r, secLabel){
+  return `<header class="band exam-bar"><div class="band-in gut">
+    <div class="brand">${EXAMS[r.exam].short} <small>${secLabel}</small></div>
+    <div class="spacer"></div>
+    <div class="timer-box"><span id="timer" class="timer" aria-live="off">--:--</span><button class="btn sm" data-act="toggleTimer">${S.hideTimer?'顯示':'隱藏'}</button></div>
+    <div class="spacer"></div>
+    <span class="saved" id="saved">${esc(S.saved)}</span>
+    <button class="btn sm" data-act="ref">${EXAMS[r.exam].ref}</button>
+    <span class="small">${esc(S.student?.name||'')}</span>
+  </div></header>`;
+}
+
+function vMcq(){
+  const r=S.result, ids=r.qids.mcq, q=S.Q[ids[S.idx]];
+  const ans=r.mcqAnswers||{}, marked=new Set(r.marked||[]);
+  const nav = ids.map((id,i)=>`<button class="qdot ${i===S.idx?'cur':''} ${ans[id]&&ansArr(ans[id]).length?'ans':''} ${marked.has(id)?'mk':''}" data-act="go" data-i="${i}" aria-label="第 ${i+1} 題">${i+1}</button>`).join('');
+  const done = ids.filter(id=>ansArr(ans[id]).length).length;
+  let body;
+  if(!q) body = `<p class="muted">這一題已被考官從題庫移除，請直接跳到下一題。</p>`;
+  else {
+    const sel = ansArr(ans[q.id]);
+    const choices = (q.choices||[]).map((c,i)=>{ const L=LET[i]; return `<button class="choice ${sel.includes(L)?'sel':''}" data-act="pick" data-l="${L}" aria-pressed="${sel.includes(L)}"><span class="ltr">${L}</span><span class="ct ${q.choiceMono?'mono':''}">${q.choiceMono?esc(c):esc(c).replace(/`([^`]+)`/g,'<code>$1</code>')}</span></button>`; }).join('');
+    body = `<div class="qhead"><h2>Question ${S.idx+1}</h2><span class="muted small">/ ${ids.length}</span><div class="spacer"></div>
+      <button class="flagbtn ${marked.has(q.id)?'on':''}" data-act="flag">${FLAG}${marked.has(q.id)?'已標記':'標記待檢查'}</button></div>
+      <div class="stem">${fmt(q.stem)}${codeBlock(q.code)}</div>
+      ${q.multi?'<p class="multi-note">選出兩個答案</p>':''}
+      <div class="choices">${choices}</div>`;
+  }
+  const last = S.idx===ids.length-1;
+  return `<div class="exam">${examBar(r,'Section I · 選擇題')}
+    ${S.notice?`<div class="notice gut">${esc(S.notice)}</div>`:''}
+    <nav class="qnav gut" aria-label="題號">${nav}</nav>
+    <div class="qmain"><div class="qpane gut">${body}</div></div>
+    <footer class="exam-foot"><div class="band-in gut">
+      <button class="btn" data-act="prev" ${S.idx===0?'disabled':''}>← 上一題</button>
+      <div class="spacer"></div><button class="linkbtn small num" data-act="review">已作答 ${done} / ${ids.length} · 總覽</button><div class="spacer"></div>
+      ${last?`<button class="btn primary" data-act="review">檢查並交卷</button>`:`<button class="btn primary" data-act="next">下一題 →</button>`}
+    </div></footer></div>`;
+}
+
+function vFrq(){
+  const r=S.result, ids=r.qids.frq, q=S.Q[ids[S.fidx]];
+  const fa=r.frqAnswers||{};
+  const nav = ids.map((id,i)=>{ const a=fa[id]||{}; const any=Object.values(a).some(v=>v&&v.trim()); return `<button class="qdot ${i===S.fidx?'cur':''} ${any?'ans':''}" data-act="fgo" data-i="${i}" aria-label="問答第 ${i+1} 題">${i+1}</button>`; }).join('');
+  let left='', right='';
+  if(!q){ left='<p class="muted">此題已被移除。</p>'; }
+  else {
+    left = `<div class="stem"><h2 style="font-family:var(--f-ui);font-size:17px">Question ${S.fidx+1} <span class="muted small">· ${esc(q.title||'')}</span></h2>${fmt(q.stem)}${codeBlock(q.code)}
+      <div class="parts">${(q.parts||[]).map(p=>`<div class="part-q"><b>${esc(p.label)}.</b><div>${fmt(p.prompt)}<p class="muted small" style="font-family:var(--f-ui)">${p.points} 分</p></div></div>`).join('')}</div></div>`;
+    right = (q.parts||[]).map(p=>`<div class="ans-block"><div class="lab"><label for="fa-${esc(q.id)}-${esc(p.label)}">Part ${esc(p.label)}</label><span class="muted small">${p.points} 分</span></div>
+      <textarea class="code-in" id="fa-${esc(q.id)}-${esc(p.label)}" data-q="${esc(q.id)}" data-part="${esc(p.label)}" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="在這裡寫 Java 程式碼…">${esc((fa[q.id]||{})[p.label]||'')}</textarea></div>`).join('');
+  }
+  const last=S.fidx===ids.length-1;
+  return `<div class="exam frq">${examBar(r,'Section II · 問答題')}
+    ${S.notice?`<div class="notice gut">${esc(S.notice)}</div>`:''}
+    <nav class="qnav gut" aria-label="題號">${nav}</nav>
+    <div class="split" style="--left:${S.left}">
+      <section class="pane left">${left}</section>
+      <div class="divider" id="divider" role="separator" aria-label="拖曳調整寬度"></div>
+      <section class="pane right">${right}</section>
+    </div>
+    <footer class="exam-foot"><div class="band-in gut">
+      <button class="btn" data-act="fprev" ${S.fidx===0?'disabled':''}>← 上一題</button><div class="spacer"></div>
+      ${last?`<button class="btn primary" data-act="confirmSubmit">交卷</button>`:`<button class="btn primary" data-act="fnext">下一題 →</button>`}
+    </div></footer></div>`;
+}
+
+function vGrading(){
+  return bandSimple('批改中') + `<main class="center gut"><div><div class="spin"></div><h1 style="font-size:20px">AI 正在依評分標準批改問答題</h1><p class="muted">通常需要 30 秒到 2 分鐘，請不要關閉頁面。</p></div></main>`;
+}
+
+/* ---------- report ---------- */
+function radarChart(unitStats, size){
+  size = size || 260;
+  const n = unitStats.length; if(n<3) return '';
+  const cx=size/2, cy=size/2, R=size/2-44;
+  const angle = i => -Math.PI/2 + i*2*Math.PI/n;
+  const pt = (i,r) => [cx+r*Math.cos(angle(i)), cy+r*Math.sin(angle(i))];
+  const LINE='#d4dce2', MUTED='#55626e', ACCENT='#1d4f91', ACCENT_FILL='rgba(29,79,145,0.28)', FONT="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif";
+  const rings=[0.25,0.5,0.75,1].map(f=>`<polygon points="${unitStats.map((_,i)=>pt(i,R*f).join(',')).join(' ')}" fill="none" stroke="${LINE}"/>`).join('');
+  const axes=unitStats.map((_,i)=>{ const [x,y]=pt(i,R); return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${LINE}"/>`; }).join('');
+  const poly=unitStats.map((u,i)=>pt(i,R*Math.max(0.04,u.pct/100)).join(',')).join(' ');
+  const labels=unitStats.map((u,i)=>{ const [x,y]=pt(i,R+26); return `<text x="${x}" y="${y}" font-size="10" font-family="${FONT}" fill="${MUTED}" text-anchor="middle">${esc(u.code)} ${Math.round(u.pct)}%</text>`; }).join('');
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" class="radar" role="img" aria-label="各單元答對率雷達圖">${rings}${axes}<polygon points="${poly}" fill="${ACCENT_FILL}" stroke="${ACCENT}" stroke-width="2"/>${labels}</svg>`;
+}
+function exportReportPdf(r){
+  if(typeof html2pdf!=='function'){ toast('PDF 匯出元件尚未載入，請重新整理頁面'); return; }
+  const wrap = document.createElement('div');
+  wrap.className = 'pdf-export';
+  wrap.innerHTML = `<h1 style="font-size:20px">${esc(r.studentName)} · ${esc(EXAMS[r.exam].name)} 成績報告</h1>
+    <p class="muted small num">開始 ${dt(r.startedAt)}　交卷 ${dt(r.submittedAt)}</p>${vReport(r,false)}`;
+  wrap.querySelectorAll('details').forEach(d=>d.open=true);
+  wrap.querySelectorAll('.btn,.grade-edit').forEach(el=>el.remove());
+  wrap.querySelector('.mcq-list')?.closest('section')?.remove();
+  document.body.appendChild(wrap);
+  html2pdf().set({ filename:`${r.studentName}-${EXAMS[r.exam].short}-成績報告.pdf`,
+    margin:10, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']} })
+    .from(wrap).save().finally(()=>wrap.remove());
+}
+function vReport(r, admin){
+  const s = r.summary || summarize(r);
+  const ex=EXAMS[r.exam];
+  const pending = s.hasFrq && !s.frqGraded;
+  const dur = r.submittedAt && r.startedAt ? Math.round((r.submittedAt-r.startedAt)/60000)+' 分鐘' : '—';
+  const hero = `<div class="hero"><div class="apbox"><span class="lbl">AP 估計分數</span><span class="big">${s.ap ?? '…'}</span><span class="muted small">滿分 5</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0"><dl class="stats">
+      <div><dt>綜合得分</dt><dd>${s.composite==null?'待批改':s.composite+'%'}</dd></div>
+      <div><dt>選擇題</dt><dd>${s.mcqCorrect} / ${s.mcqTotal}</dd></div>
+      ${s.hasFrq?`<div><dt>問答題</dt><dd>${s.frqGraded? s.frqPts+' / '+s.frqMax : '待批改'}</dd></div>`:''}
+      <div><dt>作答時間</dt><dd>${dur}</dd></div></dl>
+      <p class="muted small">${r.exam==='CSA'?'綜合得分 = 選擇題答對率 × 55% + 問答題得分率 × 45%。':'綜合得分 = 選擇題答對率（正式考試另有 30% Create 實作任務，本模擬考不含）。'}AP 分數依歷年大致比例換算，僅供參考。</p></div></div>`;
+
+  const barRow = (code,label,b) => { const p=Math.round(b.c/b.t*100); return `<div class="bar"><span>${esc(label)}</span><div class="track"><div class="fill ${p>=80?'ok':p<60?'bad':''}" style="width:${p}%"></div></div><span class="v">${b.c}/${b.t} · ${p}%</span></div>`; };
+  const seenCodes = new Set(Object.keys(s.byTopic||{}));
+  const unitSections = [], unitStats = [];
+  for(const u of ex.units){
+    const codes = Object.keys(u.subtopics).filter(c=>seenCodes.has(c));
+    if(!codes.length) continue;
+    const rows = codes.map(c=>barRow(c, `${c} ${u.subtopics[c]}`, s.byTopic[c])).join('');
+    unitSections.push(`<div class="unit-group"><div class="unit-h">${esc(u.code)} ${esc(u.name)}</div><div class="bars">${rows}</div></div>`);
+    const sumC = codes.reduce((a,c)=>a+s.byTopic[c].c,0), sumT = codes.reduce((a,c)=>a+s.byTopic[c].t,0);
+    unitStats.push({code:u.code, pct: sumT? 100*sumC/sumT : 0});
+    codes.forEach(c=>seenCodes.delete(c));
+  }
+  if(seenCodes.size){ // topics on an imported/custom question that don't match the standard taxonomy
+    const rows=[...seenCodes].map(c=>barRow(c, topicName(r.exam,c), s.byTopic[c])).join('');
+    unitSections.push(`<div class="unit-group"><div class="unit-h">其他</div><div class="bars">${rows}</div></div>`);
+  }
+  const bars = unitSections.join('');
+  const radar = radarChart(unitStats);
+
+  const allCodes = Object.keys(s.byTopic||{});
+  const weak = allCodes.filter(c=>s.byTopic[c].c/s.byTopic[c].t < 0.6);
+  const strong = allCodes.filter(c=>s.byTopic[c].c/s.byTopic[c].t >= 0.8);
+  const advice=[];
+  if(weak.length) advice.push(`優先複習：${weak.map(t=>topicName(r.exam,t)).join('、')}（答對率低於 60%）。先看下方答錯題的解析，再找同單元題目練習。`);
+  if(strong.length) advice.push(`表現穩定：${strong.map(t=>topicName(r.exam,t)).join('、')}。`);
+  const blank = (r.qids.mcq||[]).filter(id=>!ansArr(r.mcqAnswers?.[id]).length).length;
+  if(blank) advice.push(`有 ${blank} 題選擇題沒有作答。AP 考試答錯不倒扣，時間快到時每題都要填。`);
+  if(s.hasFrq && s.frqGraded){
+    let worst=null; for(const id of r.qids.frq){ const q=S.Q[id]; const g=r.frqGrades?.[id]; if(!q||!g) continue; let a=0,m=0; q.parts.forEach(p=>{a+=g[p.label]?.score||0;m+=p.points}); const pc=m?a/m:1; if(!worst||pc<worst.pc) worst={q,pc}; }
+    if(worst && worst.pc<0.7) advice.push(`問答題中「${worst.q.title||'某題'}」失分最多（${Math.round(worst.pc*100)}%），請對照下方的評分標準修正寫法。`);
+  }
+  if(!advice.length) advice.push('各單元表現都不錯，接下來可以練習限時完成整份試卷。');
+
+  let frq='';
+  if(s.hasFrq){
+    frq = (r.qids.frq||[]).map((id,i)=>{ const q=S.Q[id]; if(!q) return ''; const g=r.frqGrades?.[id]||{}; const a=r.frqAnswers?.[id]||{};
+      return `<div class="fq"><h3>Question ${i+1} · ${esc(q.title||'')}</h3>${q.parts.map(p=>{
+        const gp=g[p.label]; const cls = !gp?'pend': gp.score>=p.points?'full': gp.score<=0?'zero':'part'; const ic = !gp?'…': gp.score>=p.points?'✓': gp.score<=0?'✕':'–';
+        const ed = admin ? `<div class="grade-edit"><label>得分 <input type="number" min="0" max="${p.points}" step="1" id="g-${esc(id)}-${esc(p.label)}" data-gq="${esc(id)}" data-gp="${esc(p.label)}" value="${gp?gp.score:''}"> / ${p.points}</label></div>` : '';
+        return `<div class="fb ${cls}"><div class="t"><span class="ic" aria-hidden="true">${ic}</span>Part ${esc(p.label)}：${gp? gp.score+' / '+p.points+' 分' : '待批改'}${gp?.by==='teacher'?' <span class="chip acc">考官評分</span>':''}</div>
+          ${rubricList(p.rubric)}
+          ${gp?.feedback ? `<p>${esc(gp.feedback)}</p>`:''}${ed}
+          <details class="ans"><summary>查看作答內容</summary>${a[p.label]?.trim()? codeBlock(a[p.label]) : '<p class="muted">（未作答）</p>'}</details></div>`;
+      }).join('')}</div>`; }).join('');
+    if(pending && !admin) frq = `<p class="muted">${esc(r.gradeNote||'問答題尚未批改，考官批改後會更新分數。')}</p>` + frq;
+    if(admin) frq = `<div class="row"><button class="btn primary" data-act="saveGrades" data-id="${r.id}">儲存評分</button><button class="btn" data-act="aiGrade" data-id="${r.id}" ${sample&&!S.admin.gradeBusy?'':'disabled'}>${S.admin.gradeBusy?'AI 批改中…':'用 AI 重新批改'}</button>${sample?'':'<span class="small muted">此檢視無法使用 AI</span>'}</div>` + frq;
+  }
+
+  const mcq = (r.qids.mcq||[]).map((id,i)=>{ const q=S.Q[id]; if(!q) return '';
+    const mine=ansArr(r.mcqAnswers?.[id]); const ok=same(mine,q.answer); const right=ansArr(q.answer);
+    const opts=(q.choices||[]).map((c,k)=>{ const L=LET[k]; const isR=right.includes(L), isM=mine.includes(L); return `<div class="opt ${isR?'right':isM?'wrong':''}"><b>${L}</b><span class="ct ${q.choiceMono?'mono':''}">${esc(c)}</span>${isR?'<span class="chip ok">正解</span>':''}${isM&&!isR?'<span class="chip bad">你的答案</span>':''}</div>`; }).join('');
+    return `<details class="mrow"><summary><span class="mk ${ok?'y':'n'}" aria-label="${ok?'答對':'答錯'}">${ok?'✓':'✕'}</span><span class="num">Q${i+1}</span><span class="prev">${esc(topicName(r.exam,q.topic))}</span><span class="ansinfo small num">你：${mine.join(',')||'—'} · 正解：${right.join(',')}</span></summary>
+      <div class="body"><div class="stem">${fmt(q.stem)}${codeBlock(q.code)}</div>${opts}${q.explanation?`<div class="expl"><b>解析　</b>${esc(q.explanation)}</div>`:''}</div></details>`;
+  }).join('');
+
+  return `<div class="report">
+    ${hero}
+    <section><h2>各單元答對率 <span class="small muted">選擇題</span></h2><div class="bars-wrap">${bars||'<p class="muted">沒有資料</p>'}${radar?`<div class="radar-wrap">${radar}</div>`:''}</div></section>
+    <section><h2>分析與建議</h2><ul class="advice">${advice.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></section>
+    ${s.hasFrq?`<section><h2>問答題評分</h2>${frq}</section>`:''}
+    <section><h2>選擇題檢討 <span class="small muted">點開看題目與解析</span></h2><div class="mcq-list">${mcq}</div></section>
+  </div>`;
+}
+function vResultPage(){
+  const r=S.result;
+  return bandSimple(EXAMS[r.exam].short+' 成績報告', `<button class="btn sm" data-act="exportPdf" data-id="${r.id}">匯出 PDF</button><button class="btn sm" data-act="home">回到首頁</button>`) +
+    `<main class="page gut"><div><h1 style="font-size:24px">${esc(r.studentName)} · ${EXAMS[r.exam].name}</h1><p class="muted small num">開始 ${dt(r.startedAt)}　交卷 ${dt(r.submittedAt)}</p></div>${vReport(r,false)}</main>`;
+}
+
+/* ---------- admin ---------- */
+function vAdmin(){
+  const A=S.admin;
+  const tabs=[['results','成績'],['students','考生'],['papers','考卷'],['questions','題庫'],['settings','設定']].map(([k,l])=>`<button class="tab ${A.tab===k?'on':''}" data-act="atab" data-t="${k}">${l}</button>`).join('');
+  let body='';
+  if(!canEdit) body='<p class="muted">只有這個頁面的編輯者可以使用後台。</p>';
+  else if(A.tab==='students') body=vStudents();
+  else if(A.tab==='results') body = A.detail ? vDetail() : vResults();
+  else if(A.tab==='papers') body = A.paperEdit ? vPaperEdit() : vPapers();
+  else if(A.tab==='questions') body = A.edit ? vQEdit() : vQuestions();
+  else body=vSettings();
+  return `<header class="band"><div class="band-in gut"><div class="brand">AP CS 模擬考 <small>考官後台</small></div><nav class="tabs">${tabs}</nav><div class="spacer"></div><button class="btn sm" data-act="logout">回到考生入口</button></div></header>
+    <main class="admin gut">${body}</main>`;
+}
+function vStudents(){
+  const rows=S.students.map(s=>{ const rs=S.results.filter(r=>r.studentId===s.id); const last=rs.find(r=>r.status==='done');
+    return `<tr><td>${esc(s.name)}</td><td>${esc(s.cls||'')}</td><td>${(s.exams||[]).map(e=>`<span class="chip acc">${e}</span>`).join(' ')}</td><td class="n">${rs.length}</td>
+    <td class="n">${last?`${last.exam} · ${last.summary?.composite ?? '—'}%`:'—'}</td>
+    <td><div class="row"><button class="btn sm" data-act="resetPw" data-id="${s.id}">重設密碼</button><button class="btn sm danger" data-act="delStudent" data-id="${s.id}">刪除</button></div></td></tr>`; }).join('');
+  return `<section class="panel"><h2>新增考生</h2>
+    <form data-act="addStudent" class="fgrid" autocomplete="off">
+      <label class="f">姓名<input id="ns-name" name="name" required></label>
+      <label class="f">密碼<input id="ns-pw" name="pw" required minlength="4"></label>
+      <label class="f">班級 / 組別<input id="ns-cls" name="cls" placeholder="例：高二A"></label>
+      <div class="row"><label class="chk"><input type="checkbox" name="CSA" id="ns-csa" checked> AP CSA</label><label class="chk"><input type="checkbox" name="CSP" id="ns-csp"> AP CSP</label></div>
+      <button class="btn primary">新增</button>
+    </form>
+    <p class="muted small">批次新增改用 CSV 格式（<code>姓名,密碼,班級,科目</code>，科目欄可填 CSA、CSP 或 CSA/CSP）：<button type="button" class="linkbtn small" data-act="downloadStudentTemplate">下載 CSV 範本</button></p>
+    <form data-act="bulkStudents" class="row" style="align-items:flex-end">
+      <label class="f" style="flex:1;min-width:240px">批次新增（可直接貼上 CSV 內容，或按右側按鈕上傳 .csv 檔）<textarea id="ns-bulk" name="bulk" rows="3" class="mono" placeholder="姓名,密碼,班級,科目&#10;王小明,ab1234,高二A,CSA&#10;陳小華,cd5678,高二B,CSA/CSP"></textarea></label>
+      <label class="btn sm" style="cursor:pointer">上傳 CSV 檔<input type="file" accept=".csv,text/csv" data-act="studentCsvFile" style="display:none"></label>
+      <button class="btn">批次新增</button>
+    </form>
+    </section>
+    <section class="panel"><h2>考生名單 <span class="small muted num">${S.students.length} 人</span></h2>
+    ${S.students.length?`<div class="tblwrap"><table class="t"><thead><tr><th>姓名</th><th>班級</th><th>可考科目</th><th>應考次數</th><th>最近成績</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">還沒有考生。用上面的表單建立第一位考生，再把姓名和密碼交給學生。</div>'}</section>`;
+}
+function vResults(){
+  const A=S.admin; const list=S.results.filter(r=>A.filter==='all'||r.exam===A.filter);
+  const sel=A.resultSel||[];
+  const done=list.filter(r=>r.status==='done'&&r.summary?.composite!=null);
+  const avg = done.length? Math.round(done.reduce((a,r)=>a+r.summary.composite,0)/done.length*10)/10 : null;
+  const pend=list.filter(r=>r.status==='pending').length, live=list.filter(r=>r.status==='mcq'||r.status==='frqReady'||r.status==='frq').length;
+  const stChip = r => ({mcq:'<span class="chip warn">作答中 · 選擇</span>',frqReady:'<span class="chip warn">等待開始問答</span>',frq:'<span class="chip warn">作答中 · 問答</span>',grading:'<span class="chip">批改中</span>',pending:'<span class="chip bad">待批改</span>',done:'<span class="chip ok">完成</span>'}[r.status]||esc(r.status));
+  const rows=list.map(r=>{ const s=r.summary; return `<tr><td class="n"><input type="checkbox" data-act="toggleResultSel" data-id="${r.id}" ${sel.includes(r.id)?'checked':''}></td><td>${esc(r.studentName)}</td><td>${esc(r.cls||'')}</td><td>${r.exam}</td><td>${stChip(r)}</td><td class="n">${dt(r.startedAt)}</td>
+    <td class="n">${s?`${s.mcqCorrect}/${s.mcqTotal}`:'—'}</td><td class="n">${s&&s.hasFrq?(s.frqGraded?`${s.frqPts}/${s.frqMax}`:'—'):''}</td><td class="n">${s?.composite!=null?s.composite+'%':'—'}</td><td class="n"><b>${s?.ap??'—'}</b></td>
+    <td><button class="btn sm" data-act="detail" data-id="${r.id}">檢視</button></td></tr>`; }).join('');
+  return `<section class="panel"><div class="row"><h2>考試成績</h2><div class="spacer"></div>
+      <div class="seg">${['all','CSA','CSP'].map(k=>`<button class="${A.filter===k?'on':''}" data-act="rfilter" data-f="${k}">${k==='all'?'全部':'AP '+k}</button>`).join('')}</div></div>
+    <div class="kpis"><div><b>${list.length}</b><span>應考人次</span></div><div><b>${avg??'—'}${avg!=null?'%':''}</b><span>平均綜合得分</span></div><div><b>${live}</b><span>作答中</span></div><div><b>${pend}</b><span>問答題待批改</span></div></div>
+    ${list.length?`<div class="row"><button type="button" class="btn sm" data-act="resultSelectAll">全選</button><button type="button" class="btn sm" data-act="resultClearSel">取消全選</button><div class="spacer"></div>${sel.length?`<button type="button" class="btn sm danger" data-act="delResultsSel">刪除所選（${sel.length}）</button>`:''}</div>
+    <div class="tblwrap"><table class="t"><thead><tr><th></th><th>考生</th><th>班級</th><th>科目</th><th>狀態</th><th>開始時間</th><th>選擇題</th><th>問答題</th><th>綜合</th><th>AP</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">還沒有任何考試紀錄。學生交卷後成績會即時出現在這裡。</div>'}
+  </section>`;
+}
+function vDetail(){
+  const r=S.results.find(x=>x.id===S.admin.detail);
+  if(!r) return `<p class="muted">找不到這筆紀錄。</p><button class="btn" data-act="back">返回</button>`;
+  return `<div class="row"><button class="btn sm" data-act="back">← 返回成績列表</button><div class="spacer"></div><button class="btn sm" data-act="exportPdf" data-id="${r.id}">匯出 PDF</button><button class="btn sm danger" data-act="delResult" data-id="${r.id}">刪除此紀錄</button></div>
+    <div><h1 style="font-size:22px">${esc(r.studentName)} · ${EXAMS[r.exam].name}</h1><p class="muted small num">開始 ${dt(r.startedAt)}　交卷 ${dt(r.submittedAt)}　${r.gradeNote?'· '+esc(r.gradeNote):''}</p></div>
+    ${vReport(r,true)}`;
+}
+function vPapers(){
+  const rows=S.examPapers.map(p=>{ const nF=(p.frqIds||[]).length;
+    return `<tr><td>${esc(p.name)}</td><td>AP ${p.exam}</td><td class="n">${(p.mcqIds||[]).length}${nF?' + '+nF+' FRQ':''}</td>
+    <td class="n">${p.mcqMin} 分鐘${nF?'／'+p.frqMin+' 分鐘':''}</td><td class="n">${(p.studentIds||[]).length} 人</td>
+    <td><div class="row"><button class="btn sm" data-act="paperPreviewSaved" data-id="${p.id}">預覽</button><button class="btn sm" data-act="paperEdit" data-id="${p.id}">編輯</button><button class="btn sm danger" data-act="paperDel" data-id="${p.id}">刪除</button></div></td></tr>`; }).join('');
+  return `<section class="panel"><div class="row"><h2>考卷</h2><div class="spacer"></div><button class="btn primary" data-act="paperNew">新增考卷</button></div>
+    ${S.examPapers.length?`<div class="tblwrap"><table class="t"><thead><tr><th>名稱</th><th>科目</th><th>題數</th><th>時間</th><th>可應試人數</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">還沒有建立任何考卷。按「新增考卷」開始。</div>'}
+    <p class="muted small">學生登入後只會看到被指派到的考卷；已經開始作答的考試不受考卷之後編輯的影響。</p></section>`;
+}
+function vPaperEdit(){
+  const A=S.admin, p=A.paperEdit;
+  const secs = p.exam==='CSA' ? ['mcq','frq'] : ['mcq']; if(!secs.includes(A.paperSec)) A.paperSec='mcq';
+  const qf=A.paperQFilter.trim().toLowerCase();
+  const qlist=qFor(p.exam,A.paperSec).filter(q=>!qf||(q.stem||'').toLowerCase().includes(qf)||topicName(p.exam,q.topic).toLowerCase().includes(qf));
+  const selIds = A.paperSec==='mcq' ? p.mcqIds : p.frqIds;
+  const qRows=qlist.map(q=>`<tr><td class="n"><input type="checkbox" data-act="paperToggleQ" data-id="${q.id}" data-sec="${A.paperSec}" ${selIds.includes(q.id)?'checked':''}></td>
+    <td class="n">${q.order??''}</td><td><span class="chip">${esc(topicName(p.exam,q.topic))}</span></td>
+    <td class="prev">${esc(A.paperSec==='frq'?(q.title||'')+' — '+(q.stem||''):q.stem)}</td></tr>`).join('');
+  const sf=A.paperSFilter.trim().toLowerCase();
+  const slist=S.students.filter(s=>!sf||s.name.toLowerCase().includes(sf)||(s.cls||'').toLowerCase().includes(sf));
+  const sRows=slist.map(s=>`<tr><td class="n"><input type="checkbox" data-act="paperToggleStudent" data-id="${s.id}" ${p.studentIds.includes(s.id)?'checked':''}></td>
+    <td>${esc(s.name)}</td><td>${esc(s.cls||'')}</td></tr>`).join('');
+  return `<section class="panel">
+    <h2>${p.id?'編輯':'新增'}考卷</h2>
+    <div class="fgrid">
+      <label class="f">名稱<input id="pe-name" value="${esc(p.name)}"></label>
+      <label class="f">科目<select id="pe-exam" data-act="paperExam">${['CSA','CSP'].map(e=>`<option value="${e}" ${p.exam===e?'selected':''}>AP ${e}</option>`).join('')}</select></label>
+      <label class="f">選擇題時間（分鐘）<input id="pe-mcqmin" type="number" min="1" value="${p.mcqMin}"></label>
+      ${p.exam==='CSA'?`<label class="f">問答題時間（分鐘）<input id="pe-frqmin" type="number" min="1" value="${p.frqMin}"></label>`:''}
+    </div>
+
+    <div class="row"><h3 style="margin:0">選題</h3><div class="spacer"></div><span class="small muted">已選 ${p.mcqIds.length} 題選擇題${p.exam==='CSA'?'、'+p.frqIds.length+' 題問答題':''}</span></div>
+    <div class="seg">${secs.map(s=>`<button type="button" class="${A.paperSec===s?'on':''}" data-act="paperSec" data-s="${s}">${s==='mcq'?'選擇題':'問答題'}</button>`).join('')}</div>
+    <div class="row" style="flex-wrap:wrap">
+      <input id="pe-qfilter" placeholder="篩選題目（題幹/單元關鍵字）" value="${esc(A.paperQFilter)}" style="flex:1;min-width:200px">
+      <button type="button" class="btn sm" data-act="paperSelectAllQ">全選篩選結果</button>
+      <button type="button" class="btn sm" data-act="paperClearQ">全不選</button>
+      ${A.paperSec==='mcq'?`<input id="pe-randn" type="number" min="1" value="42" style="width:70px"><button type="button" class="btn sm" data-act="paperRandomMcq">隨機抽題</button>`
+        :`<button type="button" class="btn sm" data-act="paperRandomFrq">隨機抽題（每類型各 1 題）</button>`}
+    </div>
+    <div class="tblwrap"><table class="t"><thead><tr><th></th><th>順序</th><th>單元</th><th>題目</th></tr></thead><tbody id="pe-qrows">${qRows||''}</tbody></table></div>
+
+    <div class="row"><h3 style="margin:0">可應試學生</h3><div class="spacer"></div><span class="small muted">已選 ${p.studentIds.length} 人</span></div>
+    <div class="row" style="flex-wrap:wrap">
+      <input id="pe-sfilter" placeholder="篩選姓名/班級" value="${esc(A.paperSFilter)}" style="flex:1;min-width:200px">
+      <button type="button" class="btn sm" data-act="paperSelectAllS">全選</button>
+      <button type="button" class="btn sm" data-act="paperClearS">全不選</button>
+    </div>
+    <div class="tblwrap"><table class="t"><thead><tr><th></th><th>姓名</th><th>班級</th></tr></thead><tbody id="pe-srows">${sRows||''}</tbody></table></div>
+
+    <p class="err">${esc(S.msg)}</p>
+    <div class="row"><button class="btn primary" data-act="paperSave">儲存</button><button type="button" class="btn" data-act="paperPreview">預覽</button><button type="button" class="btn" data-act="paperCancel">取消</button></div>
+  </section>`;
+}
+function vQuestions(){
+  const A=S.admin; const secs = A.exam==='CSA'?['mcq','frq']:['mcq']; if(!secs.includes(A.sec)) A.sec='mcq';
+  const list=qFor(A.exam,A.sec);
+  const rows=list.map(q=>`<tr><td class="n">${q.order??''}</td><td><span class="chip">${esc(topicName(A.exam,q.topic))}</span></td><td class="prev">${esc(A.sec==='frq'?(q.title||'')+' — '+(q.stem||''):q.stem)}</td>
+    <td class="n">${A.sec==='mcq'?esc(ansArr(q.answer).join(',')):(q.parts||[]).reduce((a,p)=>a+(+p.points||0),0)+' 分'}</td>
+    <td><div class="row"><button class="btn sm" data-act="qedit" data-id="${q.id}">編輯</button><button class="btn sm danger" data-act="qdel" data-id="${q.id}">刪除</button></div></td></tr>`).join('');
+  return `<section class="panel"><div class="row">
+      <div class="seg">${['CSA','CSP'].map(e=>`<button class="${A.exam===e?'on':''}" data-act="qexam" data-e="${e}">AP ${e}</button>`).join('')}</div>
+      <div class="seg">${secs.map(s=>`<button class="${A.sec===s?'on':''}" data-act="qsec" data-s="${s}">${s==='mcq'?'選擇題':'問答題'}</button>`).join('')}</div>
+      <div class="spacer"></div><button class="btn" data-act="qio">匯入 / 匯出 JSON</button><button class="btn primary" data-act="qnew">新增題目</button></div>
+    ${list.length?`<div class="tblwrap"><table class="t"><thead><tr><th>順序</th><th>單元</th><th>題目</th><th>${A.sec==='mcq'?'答案':'配分'}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">這一區還沒有題目。按「新增題目」或用 JSON 匯入。</div>'}
+    <p class="muted small">題目修改只影響之後開始的考試；已開始的考試仍以題目編號對應，刪除題目會讓舊紀錄少掉那一題。</p></section>`;
+}
+function vQEdit(){
+  const A=S.admin, q=A.edit, isF=q.section==='frq';
+  const topics=EXAMS[q.exam].units.map(u=>`<optgroup label="${esc(u.code+' '+u.name)}">${Object.entries(u.subtopics).map(([k,v])=>`<option value="${k}" ${q.topic===k?'selected':''}>${k} ${esc(v)}</option>`).join('')}</optgroup>`).join('');
+  const mcqF = `<div class="fgrid">${[0,1,2,3,4].map(i=>`<label class="f">選項 ${LET[i]}<textarea id="qe-c${i}" name="c${i}" rows="2" class="${q.choiceMono?'mono':''}">${esc((q.choices||[])[i]||'')}</textarea></label>`).join('')}</div>
+    <div class="fgrid"><label class="f">正確答案（複選以逗號分隔，如 B,C）<input id="qe-ans" name="answer" value="${esc(ansArr(q.answer).join(','))}" required></label>
+    <label class="chk"><input type="checkbox" id="qe-multi" name="multi" ${q.multi?'checked':''}> 選出兩個答案題型</label>
+    <label class="chk"><input type="checkbox" id="qe-mono" name="choiceMono" ${q.choiceMono?'checked':''}> 選項以程式字型顯示</label></div>
+    <label class="f">解析<textarea id="qe-exp" name="explanation" rows="3">${esc(q.explanation||'')}</textarea></label>`;
+  const frqF = (q.parts||[]).map((p,i)=>`<fieldset class="partf"><legend>小題 ${i+1}</legend>
+      <label class="f">標籤<input id="qe-pl${i}" name="pl${i}" value="${esc(p.label)}" required></label>
+      <label class="f">配分<input id="qe-pp${i}" name="pp${i}" type="number" min="1" value="${esc(p.points)}" required></label><span></span>
+      <label class="f wide">題目敘述<textarea id="qe-pq${i}" name="pq${i}" rows="3">${esc(p.prompt||'')}</textarea></label>
+      <label class="f wide">評分標準（每行一個得分點，AI 依此評分）<textarea id="qe-pr${i}" name="pr${i}" rows="4">${esc(p.rubric||'')}</textarea></label></fieldset>`).join('') +
+      `<div class="row"><button type="button" class="btn sm" data-act="qaddpart">＋ 新增小題</button>${(q.parts||[]).length>1?'<button type="button" class="btn sm" data-act="qrmpart">移除最後一個小題</button>':''}</div>`;
+  return `<section class="panel"><h2>${q.id?'編輯':'新增'}${isF?'問答題':'選擇題'} · AP ${q.exam}</h2>
+    <form data-act="qsave" style="display:flex;flex-direction:column;gap:14px">
+      <div class="fgrid"><label class="f">順序<input id="qe-order" name="order" type="number" value="${esc(q.order??'')}"></label>
+      <label class="f">單元<select id="qe-topic" name="topic">${topics}</select></label>
+      ${isF?`<label class="f">題目名稱<input id="qe-title" name="title" value="${esc(q.title||'')}"></label>`:''}</div>
+      <label class="f">${isF?'題目說明':'題幹'}（\`反引號\` 內文字會以程式字型顯示）<textarea id="qe-stem" name="stem" rows="${isF?6:3}" required>${esc(q.stem||'')}</textarea></label>
+      <label class="f">程式碼（選填）<textarea id="qe-code" name="code" rows="${isF?10:5}" class="mono" spellcheck="false">${esc(q.code||'')}</textarea></label>
+      ${isF?frqF:mcqF}
+      <p class="err">${esc(S.msg)}</p>
+      <div class="row"><button class="btn primary">儲存</button><button type="button" class="btn" data-act="qcancel">取消</button></div>
+    </form></section>`;
+}
+function vSettings(){
+  const c=S.cfg;
+  return `<section class="panel"><h2>考試時間</h2>
+    <form data-act="saveCfg" class="fgrid">
+      <label class="f">AP CSA 選擇題（分鐘）<input id="cf-am" name="am" type="number" min="1" value="${c.CSA.mcqMin}"></label>
+      <label class="f">AP CSA 問答題（分鐘）<input id="cf-af" name="af" type="number" min="1" value="${c.CSA.frqMin}"></label>
+      <label class="f">AP CSP 選擇題（分鐘）<input id="cf-pm" name="pm" type="number" min="1" value="${c.CSP.mcqMin}"></label>
+      <button class="btn primary">儲存</button></form>
+    <p class="muted small">變更只套用到之後開始的考試。</p></section>
+    <section class="panel"><h2>使用說明</h2><ul class="advice small">
+      <li>學生用你在「考生」頁建立的姓名與密碼登入；同一台電腦可輪流讓不同學生登入。</li>
+      <li>問答題交卷後會用 AI 依各小題「評分標準」自動給分。若 AI 無法使用，紀錄會標為「待批改」，你可以在成績明細直接輸入每小題的分數（不需要另外寫評語——評分標準本身會顯示給學生看），或按「用 AI 重新批改」。</li>
+      <li>AP 估計分數換算：CSA 綜合 ≥70% 為 5、≥57% 為 4、≥44% 為 3、≥33% 為 2；CSP ≥75% 為 5、≥62% 為 4、≥47% 為 3、≥35% 為 2。這是近似值。</li>
+      <li>這是練習用系統：密碼以雜湊存放，但懂技術的學生仍可能從瀏覽器看到題庫答案，請勿用於正式評量。</li></ul></section>`;
+}
+
+/* ---------- modal ---------- */
+function vModal(){
+  const m=S.modal;
+  if(m.kind==='review'){
+    const r=S.result, ids=r.qids.mcq, ans=r.mcqAnswers||{}, mk=new Set(r.marked||[]);
+    const un=ids.filter(id=>!ansArr(ans[id]).length).length;
+    return `<div class="scrim" data-act="closeModal"><div class="modal" role="dialog" aria-modal="true" aria-label="作答總覽" data-stop>
+      <h2>作答總覽</h2><div class="legend"><span>藍底：已作答</span><span>橘點：已標記</span><span>白底：未作答</span></div>
+      <div class="rev-grid">${ids.map((id,i)=>`<button class="qdot ${ansArr(ans[id]).length?'ans':''} ${mk.has(id)?'mk':''}" data-act="go" data-i="${i}">${i+1}</button>`).join('')}</div>
+      <p>${un?`還有 <b>${un}</b> 題未作答。`:'全部題目都已作答。'}${r.exam==='CSA'?'交卷後進入問答題，無法再修改選擇題。':''}</p>
+      <div class="row"><button class="btn primary" data-act="submitSection">確定交卷</button><button class="btn" data-act="closeModal">繼續作答</button></div></div></div>`;
+  }
+  if(m.kind==='confirm'){
+    return `<div class="scrim" data-act="closeModal"><div class="modal" role="dialog" aria-modal="true" data-stop><h2>${esc(m.title)}</h2><p>${esc(m.body)}</p>
+      <div class="row"><button class="btn ${m.danger?'danger':'primary'}" data-act="modalOk">${esc(m.ok)}</button><button class="btn" data-act="closeModal">取消</button></div></div></div>`;
+  }
+  if(m.kind==='pw'){
+    return `<div class="scrim" data-act="closeModal"><div class="modal" role="dialog" aria-modal="true" data-stop><h2>重設 ${esc(m.name)} 的密碼</h2>
+      <form data-act="savePw" class="row" style="align-items:flex-end"><label class="f" style="flex:1">新密碼<input id="pw-new" name="pw" required minlength="4"></label><button class="btn primary">儲存</button><button type="button" class="btn" data-act="closeModal">取消</button></form></div></div>`;
+  }
+  if(m.kind==='io'){
+    const A=S.admin; const data=S.qlist.filter(q=>q.exam===A.exam).sort((a,b)=>a.section.localeCompare(b.section)||(a.order||0)-(b.order||0)).map(({id,...q})=>({id,...q}));
+    return `<div class="scrim" data-act="closeModal"><div class="modal wide" role="dialog" aria-modal="true" data-stop><h2>AP ${A.exam} 題庫 JSON</h2>
+      <label class="f">目前題庫（可複製備份）<textarea id="io-out" rows="8" class="mono" readonly>${esc(JSON.stringify(data,null,1))}</textarea></label>
+      <div class="row"><button class="btn sm" data-act="copyIO">複製</button></div>
+      <form data-act="importQ" style="display:flex;flex-direction:column;gap:10px"><label class="f">匯入（貼上題目陣列；有相同 id 的題目會被覆蓋，沒有 id 的會新增）<textarea id="io-in" name="json" rows="8" class="mono" placeholder='[{"exam":"CSA","section":"mcq","order":16,"topic":"U2","stem":"...","choices":["...","..."],"answer":"B","explanation":"..."}]'></textarea></label>
+      <p class="err">${esc(S.msg)}</p><div class="row"><button class="btn primary">匯入</button><button type="button" class="btn" data-act="closeModal">關閉</button></div></form></div></div>`;
+  }
+  if(m.kind==='ref') return `<div class="scrim" data-act="closeModal"><div class="modal wide ref" role="dialog" aria-modal="true" data-stop>${S.result?.exam==='CSP'?REF_CSP:REF_CSA}<div class="row"><button class="btn" data-act="closeModal">關閉</button></div></div></div>`;
+  if(m.kind==='paperPreview'){
+    const p=m.paper;
+    const mcqList=(p.mcqIds||[]).map(id=>S.Q[id]).filter(Boolean);
+    const frqList=(p.frqIds||[]).map(id=>S.Q[id]).filter(Boolean);
+    const mcqHtml=mcqList.map((q,i)=>`<div class="mrow"><div class="body"><div class="small muted num">Q${i+1} · ${esc(topicName(p.exam,q.topic))}</div><div class="stem">${fmt(q.stem)}${codeBlock(q.code)}</div>
+      ${(q.choices||[]).map((c,k)=>`<div class="opt"><b>${LET[k]}</b><span class="ct ${q.choiceMono?'mono':''}">${esc(c)}</span></div>`).join('')}</div></div>`).join('');
+    const frqHtml=frqList.map((q,i)=>`<div class="fq"><h3>Question ${i+1} · ${esc(q.title||'')}</h3><div class="stem">${fmt(q.stem)}${codeBlock(q.code)}</div>
+      ${(q.parts||[]).map(pt=>`<div class="fb"><div class="t">Part ${esc(pt.label)}（${pt.points} 分）</div><div class="stem">${fmt(pt.prompt)}</div></div>`).join('')}</div>`).join('');
+    return `<div class="scrim" data-act="closeModal"><div class="modal wide" role="dialog" aria-modal="true" data-stop><h2>考卷預覽：${esc(p.name)}</h2>
+      <p class="muted small">選擇題 ${mcqList.length} 題・${p.mcqMin} 分鐘${frqList.length?`　問答題 ${frqList.length} 題・${p.frqMin} 分鐘`:''}</p>
+      ${mcqList.length?`<section><h3>選擇題</h3><div class="mcq-list">${mcqHtml}</div></section>`:''}
+      ${frqList.length?`<section><h3>問答題</h3>${frqHtml}</section>`:''}
+      <div class="row"><button class="btn" data-act="closeModal">關閉</button></div></div></div>`;
+  }
+  if(m.kind==='teacherlogin'){
+    return `<div class="scrim" data-act="closeModal"><div class="modal" role="dialog" aria-modal="true" data-stop><h2>考官登入</h2>
+      <form data-act="teacherLoginSubmit" class="row" style="align-items:flex-end"><label class="f" style="flex:1">管理密碼<input id="tl-pw" name="pw" type="password" required autocomplete="current-password"></label><button class="btn primary">登入</button><button type="button" class="btn" data-act="closeModal">取消</button></form>
+      <p class="err" role="alert">${esc(S.msg)}</p></div></div>`;
+  }
+  return '';
+}
+const REF_CSA = `<h2>Java Quick Reference（節錄）</h2><div class="tblwrap"><table><tbody>
+<tr><td colspan="2"><b>String</b></td></tr>
+<tr><td>int length()</td><td>字串長度</td></tr><tr><td>String substring(int from, int to)</td><td>索引 from 到 to−1 的子字串</td></tr><tr><td>String substring(int from)</td><td>從 from 到結尾</td></tr>
+<tr><td>int indexOf(String str)</td><td>第一次出現的索引，找不到回傳 −1</td></tr><tr><td>boolean equals(Object other)</td><td>內容相同時為 true</td></tr><tr><td>int compareTo(String other)</td><td>小於 0 / 0 / 大於 0</td></tr>
+<tr><td colspan="2"><b>Integer / Double / Math</b></td></tr>
+<tr><td>Integer.MIN_VALUE, Integer.MAX_VALUE</td><td>int 的最小、最大值</td></tr><tr><td>int intValue(), double doubleValue()</td><td>取出包裝類別的值</td></tr>
+<tr><td>static int abs(int x) / double abs(double x)</td><td>絕對值</td></tr><tr><td>static double pow(double b, double e)</td><td>b 的 e 次方</td></tr><tr><td>static double sqrt(double x)</td><td>平方根</td></tr><tr><td>static double random()</td><td>0.0 ≤ x &lt; 1.0</td></tr>
+<tr><td colspan="2"><b>ArrayList&lt;E&gt;</b></td></tr>
+<tr><td>int size()</td><td>元素個數</td></tr><tr><td>boolean add(E obj)</td><td>加到結尾</td></tr><tr><td>void add(int index, E obj)</td><td>插入到 index，後面元素右移</td></tr><tr><td>E get(int index)</td><td>取得元素</td></tr><tr><td>E set(int index, E obj)</td><td>取代並回傳舊元素</td></tr><tr><td>E remove(int index)</td><td>移除並回傳，後面元素左移</td></tr>
+<tr><td colspan="2"><b>Object</b></td></tr><tr><td>boolean equals(Object other)</td><td></td></tr><tr><td>String toString()</td><td></td></tr></tbody></table></div>`;
+const REF_CSP = `<h2>Exam Reference Sheet（節錄）</h2><div class="tblwrap"><table><tbody>
+<tr><td>a ← expression</td><td>把運算結果指定給變數 a</td></tr><tr><td>DISPLAY(expression)</td><td>顯示結果，後接一個空格</td></tr><tr><td>INPUT()</td><td>取得使用者輸入</td></tr>
+<tr><td>a + b, a − b, a * b, a / b</td><td>算術運算</td></tr><tr><td>a MOD b</td><td>a 除以 b 的餘數（a ≥ 0, b &gt; 0）</td></tr><tr><td>RANDOM(a, b)</td><td>a 到 b 之間的隨機整數（含兩端）</td></tr>
+<tr><td>=, ≠, &gt;, &lt;, ≥, ≤</td><td>關係運算</td></tr><tr><td>NOT, AND, OR</td><td>布林運算</td></tr>
+<tr><td>IF (condition) { } ELSE { }</td><td>條件判斷</td></tr><tr><td>REPEAT n TIMES { }</td><td>重複 n 次</td></tr><tr><td>REPEAT UNTIL (condition) { }</td><td>重複直到條件成立</td></tr><tr><td>FOR EACH item IN aList { }</td><td>依序走訪串列</td></tr>
+<tr><td>aList ← [v1, v2, v3]</td><td>建立串列，<b>索引從 1 開始</b></td></tr><tr><td>aList[i]</td><td>第 i 個元素；超出範圍會產生錯誤</td></tr><tr><td>INSERT(aList, i, value)</td><td>插入到第 i 個位置，後面元素右移</td></tr><tr><td>APPEND(aList, value)</td><td>加到結尾</td></tr><tr><td>REMOVE(aList, i)</td><td>移除第 i 個元素，後面元素左移</td></tr><tr><td>LENGTH(aList)</td><td>串列長度</td></tr>
+<tr><td>PROCEDURE name(p1, p2) { RETURN(x) }</td><td>定義程序與回傳值</td></tr></tbody></table></div>`;
+
+/* ---------- timer & saving ---------- */
+let timerId=null;
+function deadline(r){ if(r.status==='mcq') return r.mcqStart + r.mcqMin*60000; if(r.status==='frq') return r.frqStart + r.frqMin*60000; return null; }
+function startTimer(){ clearInterval(timerId); timerId=setInterval(tick,1000); tick(); }
+function tick(){
+  const r=S.result; if(!r || !(r.status==='mcq'||r.status==='frq')){ clearInterval(timerId); return; }
+  const left = deadline(r) - now(); const el=document.getElementById('timer');
+  if(el){ el.textContent = S.hideTimer ? '— —' : clock(Math.max(0,left)); el.classList.toggle('low', !S.hideTimer && left<5*60000); }
+  if(left<=0 && !S.submitting){ clearInterval(timerId); submitSection(true); }
+}
+let saveT=null;
+function setSaved(t){ S.saved=t; const el=document.getElementById('saved'); if(el) el.textContent=t; }
+function queueSave(){ clearTimeout(saveT); setSaved('儲存中…'); saveT=setTimeout(saveNow,1200); }
+async function saveNow(){
+  clearTimeout(saveT); const r=S.result; if(!r||!db) return;
+  try{ await db.doc('results/'+r.id).update({mcqAnswers:r.mcqAnswers||{}, marked:r.marked||[], frqAnswers:r.frqAnswers||{}, savedAt:now()}); setSaved('已儲存 '+hhmm()); }
+  catch(e){ setSaved('尚未儲存（'+dbErr(e)+'）'); if(e?.code==='unavailable') saveT=setTimeout(saveNow,4000+Math.random()*2000); }
+}
+
+/* ---------- exam flow ---------- */
+async function loadMine(){
+  try{ const s=await db.collection('results').where('studentId','==',S.student.id).get(); S.myResults=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.startedAt||0)-(a.startedAt||0)); }
+  catch(e){ S.myResults=[]; }
+  try{ const s=await db.collection('examPapers').where('studentIds','array-contains',S.student.id).get(); S.myPapers=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); }
+  catch(e){ S.myPapers=[]; }
+}
+async function startExam(){
+  const paper = S.myPapers.find(p=>p.id===S.pendingPaper); if(!paper) return;
+  const body={studentId:S.student.id, studentName:S.student.name, cls:S.student.cls||'', exam:paper.exam, paperId:paper.id, status:'mcq', startedAt:now(), mcqStart:now(), frqStart:null,
+    mcqMin:+paper.mcqMin||90, frqMin:+(paper.frqMin||90), qids:{mcq:(paper.mcqIds||[]).slice(), frq:(paper.frqIds||[]).slice()}, mcqAnswers:{}, marked:[], frqAnswers:{}, frqGrades:{}, savedAt:now()};
+  try{ const ref=db.collection('results').doc(); await ref.set(body); S.result={id:ref.id,...body}; }
+  catch(e){ S.msg=dbErr(e); S.view='home'; render(); return; }
+  S.idx=0; S.fidx=0; S.notice=''; S.saved=''; S.view='mcq'; render(); startTimer();
+}
+function resume(r){
+  S.result=JSON.parse(JSON.stringify(r)); S.idx=0; S.fidx=0; S.notice=''; S.saved='已載入先前作答';
+  S.view = r.status==='mcq' ? 'mcq' : r.status==='frqReady' ? 'frqGate' : 'frq';
+  render(); if(S.view==='mcq'||S.view==='frq') startTimer();
+}
+async function submitSection(auto){
+  const r=S.result; if(!r || S.submitting) return; S.submitting=true; S.modal=null; clearInterval(timerId); clearTimeout(saveT);
+  try{
+    if(r.status==='mcq'){
+      const m=scoreMcq(r); r.mcqSubmittedAt=now();
+      if(r.qids.frq.length){
+        r.status='frqReady';
+        await db.doc('results/'+r.id).update({mcqAnswers:r.mcqAnswers, marked:r.marked, mcqSubmittedAt:r.mcqSubmittedAt, status:'frqReady', summary:{...summarize(r)}});
+        S.notice = auto ? '選擇題時間到，已自動交卷。' : ''; S.saved=''; S.view='frqGate'; S.submitting=false; render(); return;
+      }
+      r.status='done'; r.submittedAt=now(); r.summary=summarize(r);
+      await db.doc('results/'+r.id).update({mcqAnswers:r.mcqAnswers, marked:r.marked, mcqSubmittedAt:r.mcqSubmittedAt, status:'done', submittedAt:r.submittedAt, summary:r.summary});
+      S.view='result'; S.submitting=false; render(); return;
+    }
+    if(r.status==='frq'){
+      r.status='grading'; r.submittedAt=now();
+      await db.doc('results/'+r.id).update({frqAnswers:r.frqAnswers, status:'grading', submittedAt:r.submittedAt});
+      S.view='grading'; render();
+      await gradeFrq(r);
+      S.submitting=false; S.view='result'; render();
+    }
+  }catch(e){ S.submitting=false; S.notice='交卷時發生問題：'+dbErr(e)+' 請再按一次交卷。'; if(r.status==='grading'){r.status='frq'} render(); }
+}
+function gradePrompt(r, qs){
+  let t = `You are an experienced AP Computer Science A exam reader. Grade each part of the student's free-response answers using ONLY that part's rubric. Each rubric line is one point unless it says otherwise; award whole points only and never more than the part's max. Follow AP scoring conventions: ignore minor syntax slips (missing semicolons, small capitalization errors) when intent is clear, but do not award a point if the logic for it is missing or wrong. An empty answer scores 0.
+Write each feedback in Traditional Chinese (繁體中文, Taiwan usage), 2-4 sentences: say which rubric points were earned and exactly what was missing for each lost point. Keep Java identifiers in English.
+Reply with ONLY JSON in this shape: {"questions":[{"id":"<question id>","parts":[{"label":"A","score":3,"feedback":"..."}]}]}
+
+`;
+  for(const q of qs){
+    t += `=== Question id: ${q.id} — ${q.title||''}\n${q.stem||''}\n${q.code?'Code provided:\n'+q.code+'\n':''}`;
+    for(const p of q.parts){ const a=((r.frqAnswers||{})[q.id]||{})[p.label]||''; t += `--- Part ${p.label} (max ${p.points} points)\nTask: ${p.prompt}\nRubric:\n${p.rubric}\nStudent answer:\n${a.trim()? a.slice(0,6000) : '(empty)'}\n`; }
+    t += '\n';
+  }
+  return t;
+}
+async function gradeFrq(r){
+  const qs=(r.qids.frq||[]).map(id=>S.Q[id]).filter(q=>q&&q.parts&&q.parts.length);
+  const fail = async note => { r.status='pending'; r.gradeNote=note; r.summary=summarize(r); try{ await db.doc('results/'+r.id).update({status:'pending', gradeNote:note, summary:r.summary}); }catch(e){} };
+  if(!sample) return fail('此裝置無法使用 AI 評分，問答題將由考官批改。');
+  try{
+    const out = await sample.json(gradePrompt(r,qs), {modelTier:'default', cache:false});
+    const grades={};
+    for(const q of qs){
+      const oq=(out?.questions||[]).find(x=>String(x.id)===q.id) || {}; grades[q.id]={};
+      for(const p of q.parts){
+        const ans=(((r.frqAnswers||{})[q.id]||{})[p.label]||'').trim();
+        const op=(oq.parts||[]).find(x=>String(x.label).trim().toUpperCase()===String(p.label).toUpperCase()) || {};
+        let sc=Math.round(Number(op.score)); if(!Number.isFinite(sc)) sc=0; if(!ans) sc=0; sc=Math.max(0,Math.min(+p.points,sc));
+        grades[q.id][p.label]={score:sc, max:+p.points, feedback:String(op.feedback||(ans?'':'未作答，此小題 0 分。')), by:'AI'};
+      }
+    }
+    r.frqGrades=grades; r.status='done'; r.gradeNote=''; r.summary=summarize(r);
+    await db.doc('results/'+r.id).update({frqGrades:grades, status:'done', gradeNote:'', summary:r.summary, gradedAt:now()});
+  }catch(e){
+    const c=e?.code;
+    const note = c==='not_granted'||c==='sampling_disabled'||c==='capability_disabled' ? '未允許 AI 評分，問答題將由考官批改。'
+      : c==='rate_limited' ? 'AI 使用量暫時已達上限，問答題將由考官批改或稍後重新批改。' : 'AI 評分沒有完成，問答題將由考官批改。';
+    await fail(note);
+  }
+}
+
+/* ---------- actions ---------- */
+const ACT = {
+  async login(f){
+    const name=f.name.value.trim(), pw=f.pw.value; S.msg='';
+    if(!db){ S.msg='尚未連線到資料庫。'; return render(); }
+    try{
+      const s=await db.collection('students').where('name','==',name).get();
+      const h=await hashPw(name,pw); const doc=s.docs.find(d=>d.data().pw===h);
+      if(!doc){ S.msg='姓名或密碼不正確，請再確認一次。'; return render(); }
+      S.student={id:doc.id,...doc.data()}; await loadMine(); S.view='home'; render();
+    }catch(e){ S.msg=dbErr(e); render(); }
+  },
+  logout(){ S.student=null; S.result=null; S.myResults=[]; S.myPapers=[]; S.msg=''; S.view='login'; clearInterval(timerId); render(); },
+  async home(){ S.msg=''; if(S.student){ await loadMine(); S.view='home'; } else S.view='login'; render(); },
+  intro(el){ S.pendingPaper=el.dataset.id; S.view='intro'; render(); },
+  start(){ startExam(); },
+  resume(el){ const r=S.myResults.find(x=>x.id===el.dataset.id); if(r) resume(r); },
+  viewMine(el){ const r=S.myResults.find(x=>x.id===el.dataset.id); if(r){ S.result=r; S.view='result'; render(); } },
+  go(el){ S.idx=+el.dataset.i; S.modal=null; render(); },
+  prev(){ if(S.idx>0){S.idx--; render();} },
+  next(){ if(S.idx<S.result.qids.mcq.length-1){S.idx++; render(); document.querySelector('.qmain')?.scrollTo(0,0);} },
+  pick(el){
+    const r=S.result, id=r.qids.mcq[S.idx], q=S.Q[id]; const L=el.dataset.l; let cur=ansArr(r.mcqAnswers[id]);
+    if(q.multi){ if(cur.includes(L)) cur=cur.filter(x=>x!==L); else { cur.push(L); if(cur.length>2) cur.shift(); } r.mcqAnswers[id]=cur.sort(); }
+    else r.mcqAnswers[id] = cur[0]===L ? '' : L;
+    render(); queueSave();
+  },
+  flag(){ const r=S.result, id=r.qids.mcq[S.idx]; const s=new Set(r.marked||[]); s.has(id)?s.delete(id):s.add(id); r.marked=[...s]; render(); queueSave(); },
+  review(){ S.modal={kind:'review'}; render(); },
+  submitSection(){ submitSection(false); },
+  fgo(el){ S.fidx=+el.dataset.i; render(); },
+  fprev(){ if(S.fidx>0){S.fidx--; render();} },
+  fnext(){ if(S.fidx<S.result.qids.frq.length-1){S.fidx++; render();} },
+  async startFrq(){
+    const r=S.result; if(!r || r.status!=='frqReady') return;
+    r.status='frq'; r.frqStart=now();
+    try{ await db.doc('results/'+r.id).update({status:'frq', frqStart:r.frqStart}); }
+    catch(e){ r.status='frqReady'; r.frqStart=null; toast(dbErr(e)); return; }
+    S.fidx=0; S.notice=''; S.saved=''; S.view='frq'; render(); startTimer();
+  },
+  confirmSubmit(){
+    const r=S.result; const empty=[]; r.qids.frq.forEach((id,i)=>{ const q=S.Q[id]; (q?.parts||[]).forEach(p=>{ if(!((r.frqAnswers[id]||{})[p.label]||'').trim()) empty.push(`Q${i+1}${p.label}`); }); });
+    S.modal={kind:'confirm', title:'確定交出問答題？', body: (empty.length?`還有 ${empty.length} 個小題沒有作答（${empty.join('、')}）。`:'所有小題都已作答。')+'交卷後會立即批改並顯示成績。', ok:'確定交卷', run:()=>submitSection(false)}; render();
+  },
+  toggleTimer(){ S.hideTimer=!S.hideTimer; const b=document.querySelector('[data-act="toggleTimer"]'); if(b) b.textContent=S.hideTimer?'顯示':'隱藏'; tick(); },
+  ref(){ S.modal={kind:'ref'}; render(); },
+  closeModal(el,e){ if(e && e.target.closest('[data-stop]') && !e.target.closest('button[data-act="closeModal"]')) return; S.modal=null; S.msg=''; render(); },
+  async modalOk(){ const m=S.modal; S.modal=null; render(); try{ await m.run(); }catch(e){ toast(dbErr(e)); } },
+  /* teacher login (local server only) */
+  teacherLogin(){ S.msg=''; S.modal={kind:'teacherlogin'}; render(); },
+  async teacherLoginSubmit(f){
+    S.msg='';
+    try{ await window.__localAdminLogin(f.pw.value); sessionStorage.setItem('apcs-go-admin','1'); location.reload(); }
+    catch(e){ S.msg='密碼不正確。'; render(); document.getElementById('tl-pw')?.focus(); }
+  },
+  async teacherLogout(){ try{ await window.__localAdminLogout(); }catch(e){} location.reload(); },
+  /* admin */
+  goAdmin(){ S.view='admin'; S.msg=''; render(); },
+  atab(el){ S.admin.tab=el.dataset.t; S.admin.detail=null; S.admin.edit=null; S.admin.paperEdit=null; S.admin.resultSel=[]; S.msg=''; render(); },
+  rfilter(el){ S.admin.filter=el.dataset.f; S.admin.resultSel=[]; render(); },
+  toggleResultSel(el){ const A=S.admin; A.resultSel=A.resultSel||[]; const id=el.dataset.id, i=A.resultSel.indexOf(id);
+    if(el.checked){ if(i<0) A.resultSel.push(id); } else if(i>=0) A.resultSel.splice(i,1); render(); },
+  resultSelectAll(){ const A=S.admin; const list=S.results.filter(r=>A.filter==='all'||r.exam===A.filter); A.resultSel=list.map(r=>r.id); render(); },
+  resultClearSel(){ S.admin.resultSel=[]; render(); },
+  delResultsSel(){
+    const A=S.admin; const ids=(A.resultSel||[]).slice(); if(!ids.length) return;
+    S.modal={kind:'confirm', danger:true, title:`刪除選取的 ${ids.length} 筆考試紀錄？`, body:'刪除後無法復原。', ok:'刪除', run:async()=>{
+      for(const id of ids){ try{ await db.doc('results/'+id).delete(); }catch(e){} }
+      A.resultSel=[]; A.detail=null; toast(`已刪除 ${ids.length} 筆紀錄`);
+    }}; render();
+  },
+  detail(el){ S.admin.detail=el.dataset.id; render(); window.scrollTo(0,0); },
+  back(){ S.admin.detail=null; render(); },
+  async addStudent(f){
+    const name=f.name.value.trim(), pw=f.pw.value, cls=f.cls.value.trim(); const exams=['CSA','CSP'].filter(k=>f[k].checked);
+    if(!exams.length) return toast('至少勾選一個科目');
+    if(S.students.some(s=>s.name===name)) return toast('已經有同名考生，請加上座號區分');
+    try{ await db.collection('students').doc().set({name, pw:await hashPw(name,pw), cls, exams, createdAt:now()}); toast('已新增 '+name); f.reset(); }
+    catch(e){ toast(dbErr(e)); }
+  },
+  async bulkStudents(f){
+    let rows=csvParse(f.bulk.value);
+    if(rows.length && /^(姓名|name)$/i.test((rows[0][0]||'').trim())) rows=rows.slice(1);
+    let n=0, skip=[];
+    for(const row of rows){ const [name,pw,cls,ex]=row.map(x=>(x||'').trim());
+      if(!name||!pw||S.students.some(s=>s.name===name)){ skip.push(name||row.join(',')); continue; }
+      const exams=(ex||'CSA').toUpperCase().split(/[\/\s]+/).filter(x=>EXAMS[x]);
+      try{ await db.collection('students').doc().set({name, pw:await hashPw(name,pw), cls:cls||'', exams:exams.length?exams:['CSA'], createdAt:now()}); n++; }catch(e){ skip.push(name); } }
+    toast(`已新增 ${n} 位`+(skip.length?`，略過：${skip.join('、')}`:'')); if(n) f.reset();
+  },
+  studentCsvFile(el){
+    const file=el.files && el.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{ const ta=document.getElementById('ns-bulk'); if(ta) ta.value=String(reader.result||''); };
+    reader.readAsText(file,'utf-8'); el.value='';
+  },
+  downloadStudentTemplate(){
+    downloadTextFile('students-template.csv', csvStringify([
+      ['姓名','密碼','班級','科目'],
+      ['王小明','ab1234','高二A','CSA'],
+      ['陳小華','cd5678','高二B','CSA/CSP'],
+    ]));
+  },
+  resetPw(el){ const s=S.students.find(x=>x.id===el.dataset.id); S.modal={kind:'pw', id:s.id, name:s.name}; render(); document.getElementById('pw-new')?.focus(); },
+  async savePw(f){ const m=S.modal; try{ await db.doc('students/'+m.id).update({pw:await hashPw(m.name,f.pw.value)}); S.modal=null; render(); toast('密碼已更新'); }catch(e){ toast(dbErr(e)); } },
+  delStudent(el){ const s=S.students.find(x=>x.id===el.dataset.id); S.modal={kind:'confirm', danger:true, title:`刪除考生 ${s.name}？`, body:'考生帳號會被刪除，但已有的考試紀錄會保留在成績列表。', ok:'刪除', run:async()=>{ await db.doc('students/'+s.id).delete(); toast('已刪除'); }}; render(); },
+  delResult(el){ const id=el.dataset.id; S.modal={kind:'confirm', danger:true, title:'刪除這筆考試紀錄？', body:'刪除後無法復原。', ok:'刪除', run:async()=>{ await db.doc('results/'+id).delete(); S.admin.detail=null; render(); toast('已刪除'); }}; render(); },
+  exportPdf(el){ const id=el.dataset.id; const r = S.results.find(x=>x.id===id) || S.result; if(r) exportReportPdf(r); },
+  paperNew(){ S.admin.paperEdit={name:'', exam:'CSA', mcqMin:90, frqMin:90, mcqIds:[], frqIds:[], studentIds:[]}; S.admin.paperSec='mcq'; S.admin.paperQFilter=''; S.admin.paperSFilter=''; S.msg=''; render(); },
+  paperEdit(el){ const p=S.examPapers.find(x=>x.id===el.dataset.id); if(!p) return; S.admin.paperEdit=JSON.parse(JSON.stringify(p)); S.admin.paperSec='mcq'; S.admin.paperQFilter=''; S.admin.paperSFilter=''; S.msg=''; render(); },
+  paperCancel(){ S.admin.paperEdit=null; S.msg=''; render(); },
+  paperExam(el){ const p=S.admin.paperEdit; p.exam=el.value; p.mcqIds=[]; p.frqIds=[]; S.admin.paperSec='mcq'; S.admin.paperQFilter=''; render(); },
+  paperSec(el){ S.admin.paperSec=el.dataset.s; S.admin.paperQFilter=''; render(); },
+  paperToggleQ(el){ const p=S.admin.paperEdit, sec=el.dataset.sec, arr=sec==='mcq'?p.mcqIds:p.frqIds, id=el.dataset.id, i=arr.indexOf(id);
+    if(el.checked){ if(i<0) arr.push(id); } else if(i>=0) arr.splice(i,1); render(); },
+  paperToggleStudent(el){ const p=S.admin.paperEdit, id=el.dataset.id, i=p.studentIds.indexOf(id);
+    if(el.checked){ if(i<0) p.studentIds.push(id); } else if(i>=0) p.studentIds.splice(i,1); render(); },
+  paperSelectAllQ(){ const A=S.admin, p=A.paperEdit; const qf=(document.getElementById('pe-qfilter')?.value||'').trim().toLowerCase();
+    const list=qFor(p.exam,A.paperSec).filter(q=>!qf||(q.stem||'').toLowerCase().includes(qf)||topicName(p.exam,q.topic).toLowerCase().includes(qf));
+    const arr=A.paperSec==='mcq'?p.mcqIds:p.frqIds; const set=new Set(arr); list.forEach(q=>set.add(q.id));
+    if(A.paperSec==='mcq') p.mcqIds=[...set]; else p.frqIds=[...set]; render(); },
+  paperClearQ(){ const p=S.admin.paperEdit; if(S.admin.paperSec==='mcq') p.mcqIds=[]; else p.frqIds=[]; render(); },
+  paperRandomMcq(){ const p=S.admin.paperEdit; const n=+(document.getElementById('pe-randn')?.value)||42; p.mcqIds=randomMcqIds(p.exam,n); render(); },
+  paperRandomFrq(){ const p=S.admin.paperEdit; p.frqIds=randomFrqIds(p.exam); render(); },
+  paperSelectAllS(){ const A=S.admin, p=A.paperEdit; const sf=(document.getElementById('pe-sfilter')?.value||'').trim().toLowerCase();
+    const list=S.students.filter(s=>!sf||s.name.toLowerCase().includes(sf)||(s.cls||'').toLowerCase().includes(sf));
+    const set=new Set(p.studentIds); list.forEach(s=>set.add(s.id)); p.studentIds=[...set]; render(); },
+  paperClearS(){ S.admin.paperEdit.studentIds=[]; render(); },
+  async paperSave(){
+    const A=S.admin, p=A.paperEdit; S.msg='';
+    p.name=(document.getElementById('pe-name')?.value||'').trim();
+    p.mcqMin=+(document.getElementById('pe-mcqmin')?.value)||90;
+    p.frqMin = p.exam==='CSA' ? (+(document.getElementById('pe-frqmin')?.value)||90) : 0;
+    if(!p.name){ S.msg='請輸入考卷名稱。'; return render(); }
+    if(!p.mcqIds.length){ S.msg='請至少選擇一題選擇題。'; return render(); }
+    if(!p.studentIds.length){ S.msg='請至少勾選一位可應試的學生。'; return render(); }
+    const {id, ...body}=p; body.createdAt = p.createdAt || now();
+    try{ await (id? db.doc('examPapers/'+id) : db.collection('examPapers').doc()).set(body); S.admin.paperEdit=null; render(); toast('考卷已儲存'); }
+    catch(e){ S.msg=dbErr(e); render(); }
+  },
+  paperDel(el){ const p=S.examPapers.find(x=>x.id===el.dataset.id); if(!p) return; S.modal={kind:'confirm', danger:true, title:`刪除考卷「${p.name}」？`, body:'已經作答過的考試紀錄不會被刪除，但學生之後登入會看不到這份考卷。', ok:'刪除', run:async()=>{ await db.doc('examPapers/'+p.id).delete(); toast('已刪除'); }}; render(); },
+  paperPreview(){ const p=S.admin.paperEdit; if(!p.mcqIds.length && !(p.frqIds||[]).length){ toast('目前還沒有選擇任何題目'); return; } S.modal={kind:'paperPreview', paper:p}; render(); },
+  paperPreviewSaved(el){ const p=S.examPapers.find(x=>x.id===el.dataset.id); if(!p) return; S.modal={kind:'paperPreview', paper:p}; render(); },
+  async saveGrades(el){
+    const r=S.results.find(x=>x.id===el.dataset.id); if(!r) return; const grades=JSON.parse(JSON.stringify(r.frqGrades||{}));
+    document.querySelectorAll('[data-gq]').forEach(inp=>{ const q=inp.dataset.gq, p=inp.dataset.gp; const qq=S.Q[q]; const part=qq?.parts.find(x=>x.label===p); if(!part) return;
+      if(inp.value===''){ return; } const sc=Math.max(0,Math.min(+part.points, Math.round(+inp.value)));
+      const old=grades[q]?.[p]; grades[q]=grades[q]||{}; grades[q][p]={score:sc, max:+part.points, feedback:old?.feedback||'', by:(old && old.score===sc)? old.by : 'teacher'}; });
+    const rr={...r, frqGrades:grades}; const sum=summarize(rr); const status = sum.frqGraded ? 'done' : (r.status==='done'?'pending':r.status);
+    try{ await db.doc('results/'+r.id).update({frqGrades:grades, summary:sum, status, gradeNote: sum.frqGraded?'':r.gradeNote||''}); toast('評分已儲存'); }catch(e){ toast(dbErr(e)); }
+  },
+  async aiGrade(el){
+    const r=S.results.find(x=>x.id===el.dataset.id); if(!r) return; S.admin.gradeBusy=true; render();
+    const copy=JSON.parse(JSON.stringify(r)); await gradeFrq(copy); S.admin.gradeBusy=false; render();
+    toast(copy.status==='done'?'AI 批改完成':copy.gradeNote||'AI 批改未完成');
+  },
+  qexam(el){ S.admin.exam=el.dataset.e; render(); },
+  qsec(el){ S.admin.sec=el.dataset.s; render(); },
+  qnew(){ const A=S.admin; const list=qFor(A.exam,A.sec); const t=Object.keys(EXAMS[A.exam].units[0].subtopics)[0];
+    S.admin.edit = A.sec==='frq' ? {exam:A.exam, section:'frq', order:list.length+1, topic:t, title:'', stem:'', code:'', parts:[{label:'A',points:3,prompt:'',rubric:''}]}
+      : {exam:A.exam, section:'mcq', order:list.length+1, topic:t, stem:'', code:'', choices:['','','',''], answer:'', explanation:''}; S.msg=''; render(); },
+  qedit(el){ S.admin.edit=JSON.parse(JSON.stringify(S.Q[el.dataset.id])); S.msg=''; render(); window.scrollTo(0,0); },
+  qcancel(){ S.admin.edit=null; S.msg=''; render(); },
+  qaddpart(){ readEdit(); const p=S.admin.edit.parts; p.push({label:LET[p.length]||String(p.length+1), points:2, prompt:'', rubric:''}); render(); },
+  qrmpart(){ readEdit(); S.admin.edit.parts.pop(); render(); },
+  async qsave(){
+    readEdit(); const q=S.admin.edit; S.msg='';
+    if(q.section==='mcq'){ const n=q.choices.length; const a=ansArr(q.answer); if(n<2){ S.msg='至少要有兩個選項。'; return render(); }
+      if(!a.length || a.some(x=>LET.indexOf(x)<0||LET.indexOf(x)>=n)){ S.msg='正確答案必須是現有選項的代號。'; return render(); }
+      if(q.multi && a.length!==2){ S.msg='「選出兩個答案」題型需要兩個正確答案。'; return render(); }
+      q.answer = a.length>1 ? a : a[0]; }
+    else if(q.parts.some(p=>!p.label||!(p.points>0))){ S.msg='每個小題都需要標籤與配分。'; return render(); }
+    const {id,...body}=q;
+    try{ await (id? db.doc('questions/'+id) : db.collection('questions').doc()).set(body); S.admin.edit=null; render(); toast('題目已儲存'); }
+    catch(e){ S.msg=dbErr(e); render(); }
+  },
+  qdel(el){ const q=S.Q[el.dataset.id]; S.modal={kind:'confirm', danger:true, title:'刪除這一題？', body:(q.title||q.stem||'').slice(0,80), ok:'刪除', run:async()=>{ await db.doc('questions/'+q.id).delete(); toast('已刪除'); }}; render(); },
+  qio(){ S.msg=''; S.modal={kind:'io'}; render(); },
+  copyIO(){ const t=document.getElementById('io-out'); navigator.clipboard?.writeText(t.value).then(()=>toast('已複製'),()=>{ t.select(); toast('已選取，請按 Ctrl+C 複製'); }) ?? (t.select()); },
+  async importQ(f){
+    let arr; try{ arr=JSON.parse(f.json.value); if(!Array.isArray(arr)) arr=[arr]; }catch(e){ S.msg='JSON 格式錯誤：'+e.message; return render(); }
+    let n=0;
+    for(const item of arr){ if(!item||!EXAMS[item.exam]||!['mcq','frq'].includes(item.section)||!item.stem) continue; const {id,...body}=item;
+      try{ await (id? db.doc('questions/'+String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g,'_')) : db.collection('questions').doc()).set(body); n++; }catch(e){ S.msg=dbErr(e); break; } }
+    S.modal=null; render(); toast(`已匯入 ${n} 題`);
+  },
+  async saveCfg(f){ const c={CSA:{mcqMin:+f.am.value||90, frqMin:+f.af.value||90}, CSP:{mcqMin:+f.pm.value||90}}; try{ await db.doc('config/exams').set(c); S.cfg=c; toast('已儲存'); }catch(e){ toast(dbErr(e)); } }
+};
+function readEdit(){
+  const q=S.admin.edit, v=id=>document.getElementById(id)?.value ?? '';
+  q.order=+v('qe-order')||0; q.topic=v('qe-topic'); q.stem=v('qe-stem'); q.code=v('qe-code');
+  if(q.section==='frq'){ q.title=v('qe-title'); q.parts=(q.parts||[]).map((p,i)=>({label:v('qe-pl'+i).trim().toUpperCase(), points:+v('qe-pp'+i)||0, prompt:v('qe-pq'+i), rubric:v('qe-pr'+i)})); }
+  else { q.choices=[0,1,2,3,4].map(i=>v('qe-c'+i)).filter(c=>c.trim()!==''); q.answer=v('qe-ans'); q.multi=document.getElementById('qe-multi')?.checked||false; q.choiceMono=document.getElementById('qe-mono')?.checked||false; q.explanation=v('qe-exp'); }
+}
+
+document.addEventListener('click', e => {
+  const el=e.target.closest('[data-act]'); if(!el || el.tagName==='FORM') return;
+  if(el.classList.contains('scrim') && e.target!==el) return;
+  const fn=ACT[el.dataset.act]; if(fn){ e.preventDefault(); fn(el,e); }
+});
+document.addEventListener('submit', e => { e.preventDefault(); const f=e.target; const fn=ACT[f.dataset.act]; if(fn) fn(f,e); });
+document.addEventListener('change', e => {
+  const el=e.target.closest('[data-act]'); if(!el || el.tagName==='FORM') return;
+  const fn=ACT[el.dataset.act]; if(fn) fn(el,e);
+});
+document.addEventListener('input', e => {
+  const t=e.target; if(t.matches('textarea[data-part]') && S.result){ const q=t.dataset.q; S.result.frqAnswers[q]=S.result.frqAnswers[q]||{}; S.result.frqAnswers[q][t.dataset.part]=t.value; queueSave(); }
+  if(t.id==='pe-qfilter'){ S.admin.paperQFilter=t.value; filterRows('pe-qrows', t.value); }
+  if(t.id==='pe-sfilter'){ S.admin.paperSFilter=t.value; filterRows('pe-srows', t.value); }
+});
+document.addEventListener('keydown', e => {
+  const t=e.target;
+  if(e.key==='Tab' && t.matches('textarea.code-in')){ e.preventDefault(); const s=t.selectionStart, en=t.selectionEnd; t.value=t.value.slice(0,s)+'    '+t.value.slice(en); t.selectionStart=t.selectionEnd=s+4; t.dispatchEvent(new Event('input',{bubbles:true})); }
+  if(e.key==='Escape' && S.modal){ S.modal=null; render(); }
+  if(S.view==='mcq' && !S.modal && !isTyping()){ if(e.key==='ArrowRight') ACT.next(); else if(e.key==='ArrowLeft') ACT.prev(); }
+});
+document.addEventListener('pointerdown', e => {
+  const d=e.target.closest('#divider'); if(!d) return; const split=d.parentElement; const rect=split.getBoundingClientRect(); d.setPointerCapture(e.pointerId);
+  const mv=ev=>{ const p=Math.min(75,Math.max(25,(ev.clientX-rect.left)/rect.width*100)); S.left=p.toFixed(1)+'%'; split.style.setProperty('--left',S.left); };
+  const up=()=>{ d.removeEventListener('pointermove',mv); d.removeEventListener('pointerup',up); };
+  d.addEventListener('pointermove',mv); d.addEventListener('pointerup',up);
+});
+window.addEventListener('beforeunload', () => { if(S.result && (S.result.status==='mcq'||S.result.status==='frq')) saveNow(); });
+</script>
+
+</body></html>

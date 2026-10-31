@@ -1,0 +1,96 @@
+[
+ {
+  "id": "csa3-f1",
+  "code": "public class LoyaltyCode\n{\n    private String code; // To be initialized in part (a)\n\n    /**\n     * Creates a code based on the parameter requestedName. If the\n     * requested code is unavailable, appends successive integers,\n     * beginning with 1, to requestedName until an available code is\n     * found, as described in part (a).\n     */\n    public LoyaltyCode(String requestedName)\n    { /* to be implemented in part (a) */ }\n\n    /**\n     * Returns true if the parameter str is an available loyalty code;\n     * returns false otherwise.\n     */\n    public static boolean isAvailable(String str)\n    { /* implementation not shown */ }\n\n    /**\n     * Returns a version of code with every digit character ('0'-'9')\n     * replaced by the character '*', as described in part (b).\n     * Precondition: code.length() >= 1\n     * Postcondition: code is unchanged.\n     */\n    public String getMaskedCode()\n    { /* to be implemented in part (b) */ }\n\n    /* There may be instance variables, constructors, and methods\n          that are not shown. */\n}",
+  "exam": "CSA",
+  "order": 5,
+  "parts": [
+   {
+    "label": "A",
+    "points": 4,
+    "prompt": "The following information applies to part A.\n\nIn part A, you will write the LoyaltyCode constructor, which creates a loyalty code based on the parameter requestedName.\n\nA helper method, isAvailable, has been provided to determine whether a code is available. The isAvailable method returns true if its parameter is an available code and returns false otherwise.\n\nIf requestedName is an available code, the LoyaltyCode constructor assigns requestedName to the instance variable code. If not, the constructor tries different variations of requestedName until an available code is found, as in the following example.\n\n- If requestedName is \"Chen88\" and this code is not available, the constructor checks the availability of \"Chen881\", \"Chen882\", \"Chen883\", and so on, until an available code is found. The first available code found is assigned to code.\n- If requestedName is \"Wang3\" and this code is available, then \"Wang3\" is assigned to code.\n\nComplete the LoyaltyCode constructor. You must use isAvailable appropriately in order to receive full credit.\n\npublic LoyaltyCode(String requestedName)",
+    "rubric": "+1 Tries requestedName itself first; if isAvailable(requestedName) is true, assigns requestedName to code\n+1 Otherwise, builds candidate strings by concatenating requestedName with successive integers beginning at 1\n+1 Repeatedly calls isAvailable on each candidate (using a loop) until an available one is found, with no candidate skipped\n+1 Assigns the first available candidate string to the instance variable code",
+    "explanation": "先直接檢查 requestedName 本身是否可用（isAvailable(requestedName)），可用就直接指定給 code；若不可用，則用迴圈把 requestedName 依序接上 1、2、3……組成新的候選字串，每次都呼叫 isAvailable 檢查，直到找到第一個可用的候選字串，再把它指定給 code。"
+   },
+   {
+    "label": "B",
+    "points": 3,
+    "prompt": "The following information applies to part B.\n\nIn part B, you will write the method getMaskedCode, which returns a version of the instance variable code with every digit character replaced by the character '*'. Characters in code that are not digits are left unchanged.\n\nFor example, if code is \"Chen881\", the call getMaskedCode() returns \"Chen***\". If code is \"Wang3\", the call getMaskedCode() returns \"Wang*\".\n\nComplete method getMaskedCode.\n\npublic String getMaskedCode()",
+    "rubric": "+1 Accesses every character of code with no out-of-bounds access\n+1 Correctly determines whether a character is a digit (e.g., using Character.isDigit, or comparing the character to '0' through '9')\n+1 Builds and returns a new string in which every digit is replaced by '*' and every other character is copied unchanged, in the original order",
+    "explanation": "走訪 code 的每一個字元，用 Character.isDigit（或跟 '0'~'9' 比較）判斷是不是數字字元，是數字就串接 '*'，不是數字就原樣串接，最後回傳組好的新字串，不會更動 code 本身。"
+   }
+  ],
+  "sample": false,
+  "section": "frq",
+  "stem": "This question involves the LoyaltyCode class, which represents a loyalty-program code that identifies a store member. You will write a constructor and a method. Assume that requestedName and code are never empty.",
+  "title": "Methods and Control Structures: LoyaltyCode",
+  "topic": "4.2"
+ },
+ {
+  "id": "csa3-f2",
+  "code": "Thermostat t = new Thermostat(68.0);\nt.setTarget(75.0);\ndouble a1 = t.adjust();   // 70.0 (moves up by at most 2.0 toward the target)\ndouble a2 = t.adjust();   // 72.0\ndouble a3 = t.adjust();   // 74.0\ndouble a4 = t.adjust();   // 75.0 (remaining difference was 1.0, so it snaps exactly to the target)\ndouble a5 = t.adjust();   // 75.0 (already at the target; stays, but the call still counts)\nint n = t.getAdjustCount(); // 5",
+  "exam": "CSA",
+  "order": 5,
+  "parts": [
+   {
+    "label": "A",
+    "points": 7,
+    "prompt": "A Thermostat object simulates a thermostat that gradually moves a current temperature toward a target temperature every time it is adjusted, instead of jumping to the target immediately.\n\nThermostat objects are created by a constructor with one double parameter representing the starting temperature. Assume this value may be any real number. When a Thermostat is constructed, both the current temperature and the target temperature are set to the starting temperature, and the number of times the thermostat has been adjusted is 0.\n\nThe method setTarget(double t) sets the target temperature to t. The target temperature may be higher or lower than the current temperature.\n\nThe method adjust() moves the current temperature one step closer to the target temperature and returns the new current temperature. Each call to adjust() changes the current temperature by at most 2.0 degrees, in the direction of the target temperature (increasing it if the target is higher, decreasing it if the target is lower). However, if the remaining difference between the current temperature and the target temperature is 2.0 degrees or less, the current temperature is set exactly equal to the target temperature instead of overshooting it. Every call to adjust() increases the number of times adjusted by 1, even if the current temperature is already equal to the target temperature.\n\nThe method getCurrentTemp() returns the current temperature, and the method getAdjustCount() returns the number of times adjust() has been called.\n\nThe following table contains a sample code execution sequence and the corresponding results. The code execution sequence appears in a class other than Thermostat.\n\nStatement: Thermostat t = new Thermostat(68.0);\nStatement: t.setTarget(75.0);\nStatement: t.adjust();  Return Value: 70.0  Explanation: Moves up by 2.0 toward the target of 75.0.\nStatement: t.adjust();  Return Value: 72.0\nStatement: t.adjust();  Return Value: 74.0\nStatement: t.adjust();  Return Value: 75.0  Explanation: The remaining difference was 1.0 (75.0 - 74.0), which is 2.0 or less, so the current temperature is set exactly to the target.\nStatement: t.adjust();  Return Value: 75.0  Explanation: The current temperature is already equal to the target, so it stays at 75.0, but the adjust count still increases.\nStatement: t.getAdjustCount();  Return Value: 5\n\nWrite the complete Thermostat class. Your implementation must meet all specifications and conform to the example shown in the table.",
+    "rubric": "+1 Declares class header `public class Thermostat` and private instance variables for the current temperature, the target temperature, and the number of adjustments\n+1 Constructor has a single double parameter; initializes both the current temperature and the target temperature to that value, and initializes the adjustment count to 0\n+1 Declares correct method headers: `public void setTarget(double t)`, `public double adjust()`, `public double getCurrentTemp()`, `public int getAdjustCount()`\n+1 setTarget correctly updates the target temperature\n+1 adjust() correctly determines the direction of movement (handles both the case where the target is higher and the case where it is lower than the current temperature)\n+1 adjust() moves the current temperature by at most 2.0 toward the target, snapping exactly to the target when the remaining difference is 2.0 or less, and returns the updated current temperature\n+1 adjust() increments the adjustment count on every call, including when the current temperature already equals the target temperature; getCurrentTemp and getAdjustCount return the correct values",
+    "explanation": "建構子把 currentTemp 和 targetTemp 都設成起始溫度，adjustCount 歸零；setTarget 單純更新 targetTemp；adjust() 要先算出 targetTemp 和 currentTemp 的差距（可能是正也可能是負，代表上升或下降），若差距的絕對值小於等於 2.0 就直接把 currentTemp 設成 targetTemp，否則朝目標方向移動 2.0 度；不論是否真的移動，adjustCount 都要加 1，最後回傳目前的 currentTemp。"
+   }
+  ],
+  "sample": false,
+  "section": "frq",
+  "stem": "This question involves the Thermostat class, which represents a thermostat that gradually adjusts a current temperature toward a target temperature.",
+  "title": "Class Design: Thermostat",
+  "topic": "5.6"
+ },
+ {
+  "id": "csa3-f3",
+  "code": "public class QuizResult\n{\n    /** Returns the number of the quiz this result is for. */\n    public int getQuizNumber()\n    { /* implementation not shown */ }\n\n    /** Returns the score earned on this quiz. */\n    public int getScore()\n    { /* implementation not shown */ }\n\n    /* There may be instance variables, constructors, and methods\n          that are not shown. */\n}\n\npublic class StudentProgress\n{\n    private ArrayList<QuizResult> results;\n\n    /** Returns the largest increase in score between two results that\n     *  are consecutive in results (that is, the largest value of\n     *  results.get(k + 1).getScore() - results.get(k).getScore() for\n     *  any valid index k). If results contains fewer than two elements,\n     *  or if no consecutive increase is positive, returns 0.\n     *  Precondition: results is sorted by quiz number, earliest first.\n     *  Postcondition: results is unchanged.\n     */\n    public int biggestImprovement()\n    { /* to be implemented */ }\n}",
+  "exam": "CSA",
+  "order": 5,
+  "parts": [
+   {
+    "label": "A",
+    "points": 5,
+    "prompt": "A QuizResult object represents one student's score on one quiz. A StudentProgress object stores that student's quiz results, in order from earliest to latest quiz, in an ArrayList<QuizResult> named results. You will write one method of the StudentProgress class.\n\nWrite the method biggestImprovement. The method should return the largest increase in score between two results that are consecutive (next to each other) in results. For example, suppose results contains five QuizResult objects, with scores, in order, of 60, 55, 80, 78, and 90. The consecutive differences are 55 - 60 = -5, 80 - 55 = 25, 78 - 80 = -2, and 90 - 78 = 12. The largest of these differences is 25, so the call biggestImprovement() should return 25.\n\nIf results contains fewer than two elements, or if every consecutive difference is zero or negative (the student never improved from one quiz to the next), biggestImprovement should return 0.\n\nComplete method biggestImprovement.\n\n/** Returns the largest increase in score between two results that\n *  are consecutive in results (that is, the largest value of\n *  results.get(k + 1).getScore() - results.get(k).getScore() for\n *  any valid index k). If results contains fewer than two elements,\n *  or if no consecutive increase is positive, returns 0.\n *  Precondition: results is sorted by quiz number, earliest first.\n *  Postcondition: results is unchanged.\n */\npublic int biggestImprovement()",
+    "rubric": "+1 Accesses every pair of elements that are consecutive in results (index k and index k + 1) with no out-of-bounds access\n+1 Correctly computes the score difference for each consecutive pair (the later result's score minus the earlier result's score)\n+1 Correctly tracks the maximum difference found while examining all consecutive pairs\n+1 Initializes or otherwise ensures the result is 0 when results has fewer than two elements, or when no consecutive difference is positive\n+1 Returns the correct maximum increase",
+    "explanation": "從索引 0 走到 results.size()-2，依序比較 results.get(k+1) 和 results.get(k) 的分數差（後面減前面），用一個變數記錄看過的最大差值，初始值設為 0，這樣如果串列長度不足兩筆、或全部差值都不是正的，最後回傳的就是 0；走訪完畢後回傳記錄到的最大差值即可。"
+   }
+  ],
+  "sample": false,
+  "section": "frq",
+  "stem": "This question involves the QuizResult and StudentProgress classes, which together track one student's scores over a sequence of quizzes.",
+  "title": "Data Analysis with ArrayList: StudentProgress",
+  "topic": "7.4"
+ },
+ {
+  "id": "csa3-f4",
+  "code": "public class StorageGrid\n{\n    private int[][] stock; // stock[r][c] is the number of units in the bin at row r, column c\n\n    /** Returns the number of bins in the given column whose stock is\n     *  strictly less than minStock.\n     *  Precondition: 0 <= col < stock[0].length\n     */\n    public int countLowInColumn(int col, int minStock)\n    { /* to be implemented in part (a) */ }\n\n    /** Returns the index of the column with the greatest number of bins\n     *  whose stock is strictly less than 5. If there is a tie, returns\n     *  the smallest such column index.\n     *  You must use countLowInColumn appropriately to receive full credit.\n     */\n    public int mostUnderstockedColumn()\n    { /* to be implemented in part (b) */ }\n}",
+  "exam": "CSA",
+  "order": 5,
+  "parts": [
+   {
+    "label": "A",
+    "points": 3,
+    "prompt": "A StorageGrid represents the bins in a warehouse as a 2D array of int, where stock[r][c] is the number of units stored in the bin at row r, column c. The array has at least one row and at least one column.\n\nWrite the method countLowInColumn, which returns the number of bins in the given column whose stock is strictly less than minStock. For example, suppose stock contains the following values.\n\n{ {12, 3, 8},\n  {2, 1, 9},\n  {7, 4, 6},\n  {10, 2, 15} }\n\nThe call countLowInColumn(1, 5) examines column 1, whose values are 3, 1, 4, and 2; all four are less than 5, so the call returns 4.\n\nComplete method countLowInColumn.\n\npublic int countLowInColumn(int col, int minStock)",
+    "rubric": "+1 Accesses every row of stock in the given column, with no out-of-bounds access\n+1 Correctly compares each bin's stock in that column to minStock, using a strict less-than comparison\n+1 Returns the correct count of bins below the threshold",
+    "explanation": "走訪該欄（col）的每一列，也就是 stock[0][col]、stock[1][col]……直到最後一列，每個值都跟 minStock 比較，嚴格小於（<）就讓計數器加一，最後回傳計數器。"
+   },
+   {
+    "label": "B",
+    "points": 3,
+    "prompt": "Write the method mostUnderstockedColumn, which returns the index of the column with the greatest number of bins whose stock is strictly less than 5. If there is a tie, the method returns the smallest such column index. For the stock contents shown above, column 0 has one bin below 5 (the value 2), column 1 has four (as computed in part (a)), and column 2 has none, so mostUnderstockedColumn should return 1.\n\nYou must use countLowInColumn appropriately to receive full credit.\n\nComplete method mostUnderstockedColumn.\n\npublic int mostUnderstockedColumn()",
+    "rubric": "+1 Calls countLowInColumn for every column index from 0 to stock[0].length - 1, using a stock threshold of 5\n+1 Correctly tracks the maximum count and its column index so that ties keep the smallest index (i.e., uses a strict greater-than comparison, not greater-than-or-equal)\n+1 Returns the index of the column with the greatest number of understocked bins",
+    "explanation": "對每一欄呼叫 countLowInColumn(col, 5)，用一個變數記錄目前看過的最大計數與對應的欄索引；比較時用嚴格大於（>，不是 >=）才更新，這樣遇到同票時會保留先出現、索引較小的那一欄；走訪完所有欄之後回傳記錄到的欄索引。"
+   }
+  ],
+  "sample": false,
+  "section": "frq",
+  "stem": "This question involves the StorageGrid class, which represents the stock levels of bins arranged in rows and columns in a warehouse.",
+  "title": "2D Array: StorageGrid",
+  "topic": "8.2"
+ }
+]

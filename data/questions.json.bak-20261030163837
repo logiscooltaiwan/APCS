@@ -1,0 +1,727 @@
+[
+ {
+  "id": "csa-f1",
+  "code": "public class DigitTools\n{\n    /** Returns the number of even digits in num.\n     *  Precondition: num > 0\n     */\n    public static int countEvenDigits(int num)\n    { /* to be implemented in part (a) */ }\n\n    /** Returns true if num has the same number of even digits\n     *  as odd digits; false otherwise.\n     *  Precondition: num > 0\n     */\n    public static boolean isBalanced(int num)\n    { /* to be implemented in part (b) */ }\n}",
+  "exam": "CSA",
+  "order": 1,
+  "parts": [
+   {
+    "label": "A",
+    "points": 4,
+    "prompt": "Write the method `countEvenDigits`. For example, `countEvenDigits(28041)` returns 4 (the digits 2, 8, 0, 4 are even) and `countEvenDigits(135)` returns 0.",
+    "rubric": "+1 Accesses every digit of num (e.g. uses % 10 and / 10 in a loop, or converts to a String and loops over all characters)\n+1 Correctly determines whether a single digit is even (including 0)\n+1 Counts the even digits correctly (counter initialized and incremented only for even digits)\n+1 Returns the correct count; loop terminates for all positive num"
+   },
+   {
+    "label": "B",
+    "points": 3,
+    "prompt": "Write the method `isBalanced`. For example, `isBalanced(1234)` returns true and `isBalanced(1357)` returns false. You must use `countEvenDigits` appropriately to receive full credit.",
+    "rubric": "+1 Calls countEvenDigits(num) and uses its result\n+1 Correctly determines the total number of digits (or the number of odd digits) in num\n+1 Returns true exactly when even count equals odd count, false otherwise"
+   }
+  ],
+  "sample": true,
+  "section": "frq",
+  "stem": "This question involves the static methods of the `DigitTools` class. You will write two methods. Assume all parameters are positive integers.",
+  "title": "Methods and Control Structures: DigitTools",
+  "topic": "4.2"
+ },
+ {
+  "id": "csa-f2",
+  "code": "GiftCard card = new GiftCard(\"G-102\", 50);\ncard.spend(20);              // returns true, balance is 30\ncard.spend(45);              // returns false, balance is still 30\ncard.spend(30);              // returns true, balance is 0\ncard.getBalance();           // returns 0\ncard.getFailedAttempts();    // returns 1",
+  "exam": "CSA",
+  "order": 2,
+  "parts": [
+   {
+    "label": "A",
+    "points": 7,
+    "prompt": "Write the complete `GiftCard` class, including the instance variables, constructor, and the methods `spend`, `getBalance`, and `getFailedAttempts`. Your implementation must meet all specifications and conform to the example.",
+    "rubric": "+1 Declares class header `public class GiftCard` and private instance variables for the ID, balance, and failed-attempt count\n+1 Constructor header with String and int parameters; initializes ID and balance from parameters (failed count starts at 0)\n+1 Declares method headers: `public boolean spend(int amount)`, `public int getBalance()`, `public int getFailedAttempts()`\n+1 spend compares amount to the current balance correctly (amount <= balance succeeds)\n+1 On success, reduces balance by amount and returns true\n+1 On failure, leaves balance unchanged, increments the failed count, and returns false\n+1 getBalance and getFailedAttempts return the correct instance variable values"
+   }
+  ],
+  "sample": true,
+  "section": "frq",
+  "stem": "A gift card has an identifier and a balance in dollars. Write the complete `GiftCard` class.\n\nThe constructor takes a `String` card ID and an `int` starting balance. The method `spend(int amount)` attempts a purchase: if `amount` is less than or equal to the current balance, the balance is reduced by `amount` and the method returns `true`; otherwise the balance is unchanged, the attempt is counted as a failed attempt, and the method returns `false`. `getBalance()` returns the current balance and `getFailedAttempts()` returns the number of failed purchase attempts so far.",
+  "title": "Class Design: GiftCard",
+  "topic": "5.6"
+ },
+ {
+  "id": "csa-f3",
+  "code": "public class Song\n{\n    public String getTitle()  { /* implementation not shown */ }\n    public String getArtist() { /* implementation not shown */ }\n    public int getSeconds()   { /* implementation not shown */ }\n}\n\npublic class Playlist\n{\n    private ArrayList<Song> songs;\n\n    /** Removes every song whose length is less than minSeconds\n     *  from songs and returns the titles of the removed songs,\n     *  in the order they originally appeared.\n     */\n    public ArrayList<String> removeShortSongs(int minSeconds)\n    { /* to be implemented */ }\n}",
+  "exam": "CSA",
+  "order": 3,
+  "parts": [
+   {
+    "label": "A",
+    "points": 5,
+    "prompt": "Write the method `removeShortSongs`. For example, if `songs` contains songs of length 200, 95, 310, 60 (titles \"Rise\", \"Intro\", \"Echo\", \"Skit\") and `minSeconds` is 100, then after the call `songs` contains \"Rise\" and \"Echo\" and the method returns [\"Intro\", \"Skit\"].",
+    "rubric": "+1 Accesses all elements of songs with no out-of-bounds access\n+1 Correctly compares getSeconds() to minSeconds (strictly less than)\n+1 Removes every qualifying song without skipping elements (e.g. iterates backward, or does not increment the index after a removal)\n+1 Creates a new ArrayList<String> and adds titles of removed songs in their original order\n+1 Returns the list of removed titles"
+   }
+  ],
+  "sample": true,
+  "section": "frq",
+  "stem": "A `Song` object has a title, an artist, and a length in seconds. A `Playlist` stores songs in an `ArrayList<Song>`. You will write one method of the `Playlist` class.",
+  "title": "Data Analysis with ArrayList: Playlist",
+  "topic": "7.4"
+ },
+ {
+  "id": "csa-f4",
+  "code": "public class SeatingChart\n{\n    private String[][] seats;\n\n    /** Returns the number of empty seats in column col.\n     *  Precondition: 0 <= col < seats[0].length\n     */\n    public int emptyInColumn(int col)\n    { /* to be implemented in part (a) */ }\n\n    /** Returns the index of the column with the most empty\n     *  seats. If there is a tie, returns the smallest index.\n     */\n    public int bestColumn()\n    { /* to be implemented in part (b) */ }\n}",
+  "exam": "CSA",
+  "order": 4,
+  "parts": [
+   {
+    "label": "A",
+    "points": 3,
+    "prompt": "Write the method `emptyInColumn`.",
+    "rubric": "+1 Accesses every row of seats in column col (no out-of-bounds access)\n+1 Correctly identifies an empty seat by comparing the element to null (== null)\n+1 Counts and returns the number of empty seats"
+   },
+   {
+    "label": "B",
+    "points": 3,
+    "prompt": "Write the method `bestColumn`. You must use `emptyInColumn` appropriately to receive full credit.",
+    "rubric": "+1 Calls emptyInColumn for every column index 0 to seats[0].length - 1\n+1 Correctly tracks the maximum count and its column index (ties keep the smallest index, i.e. uses > not >=)\n+1 Returns the index of the column with the most empty seats"
+   }
+  ],
+  "sample": true,
+  "section": "frq",
+  "stem": "A `SeatingChart` represents seats in a classroom as a 2D array of `String`. A `null` element represents an empty seat; otherwise the element is the name of the student in that seat. The array has at least one row and one column.",
+  "title": "2D Array: SeatingChart",
+  "topic": "8.2"
+ },
+ {
+  "id": "csa-m01",
+  "answer": "B",
+  "choices": [
+   "5",
+   "5.0",
+   "5.4",
+   "3.4"
+  ],
+  "code": "int x = 17;\nint y = 5;\ndouble z = x / y + x % y;\nSystem.out.println(z);",
+  "exam": "CSA",
+  "explanation": "`x / y` 是整數除法得 3，`x % y` 得 2，相加為整數 5，指定給 double 後印出 5.0。",
+  "order": 1,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed as a result of executing the code segment?",
+  "topic": "1.3"
+ },
+ {
+  "id": "csa-m02",
+  "answer": "A",
+  "choices": [
+   "MPU5",
+   "MPUT5",
+   "OMP5",
+   "MPU6"
+  ],
+  "code": "String s = \"COMPUTER\";\nString t = s.substring(2, 5) + s.indexOf(\"T\");\nSystem.out.println(t);",
+  "exam": "CSA",
+  "explanation": "`substring(2, 5)` 取索引 2 到 4，得 \"MPU\"；\"T\" 在索引 5，字串與整數相接得 \"MPU5\"。",
+  "order": 2,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "2.7"
+ },
+ {
+  "id": "csa-m03",
+  "answer": "A",
+  "choices": [
+   "Between 3 and 8, inclusive",
+   "Between 3 and 9, inclusive",
+   "Between 0 and 8, inclusive",
+   "Between 3 and 6, inclusive"
+  ],
+  "code": "int r = (int) (Math.random() * 6) + 3;",
+  "exam": "CSA",
+  "explanation": "`Math.random() * 6` 介於 0.0 到 6.0（不含），轉 int 得 0～5，加 3 得 3～8。",
+  "order": 3,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following best describes the possible values of `r` after the statement below is executed?",
+  "topic": "2.9"
+ },
+ {
+  "id": "csa-m04",
+  "answer": "B",
+  "choices": [
+   "hi! hi!",
+   "hi! hi",
+   "hi hi",
+   "hi hi!"
+  ],
+  "code": "String a = \"hi\";\nString b = a;\na = a + \"!\";\nSystem.out.println(a + \" \" + b);",
+  "exam": "CSA",
+  "explanation": "String 不可變。`a + \"!\"` 產生新字串並讓 a 指向它，b 仍指向原本的 \"hi\"。",
+  "order": 4,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "2.6"
+ },
+ {
+  "id": "csa-m05",
+  "answer": "B",
+  "choiceMono": true,
+  "choices": [
+   "a <= 3 && b > 5",
+   "a <= 3 || b > 5",
+   "a < 3 || b > 5",
+   "a > 3 || b <= 5"
+  ],
+  "code": "!(a > 3 && b <= 5)",
+  "exam": "CSA",
+  "explanation": "依 De Morgan 定律，!(P && Q) 等於 !P || !Q，所以是 a <= 3 || b > 5。",
+  "order": 5,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Assume `a` and `b` are properly declared and initialized `int` variables. Which of the following is equivalent to the expression below?",
+  "topic": "3.6"
+ },
+ {
+  "id": "csa-m06",
+  "answer": "A",
+  "choices": [
+   "3",
+   "4",
+   "6",
+   "7"
+  ],
+  "code": "int count = 0;\nfor (int i = 1; i <= 20; i += 3)\n{\n    if (i % 2 == 0)\n    {\n        count++;\n    }\n}\nSystem.out.println(count);",
+  "exam": "CSA",
+  "explanation": "i 依序為 1, 4, 7, 10, 13, 16, 19，其中偶數是 4、10、16，共 3 個。",
+  "order": 6,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "4.2"
+ },
+ {
+  "id": "csa-m07",
+  "answer": "C",
+  "choices": [
+   "3",
+   "543",
+   "12",
+   "15"
+  ],
+  "code": "int n = 345;\nint sum = 0;\nwhile (n > 0)\n{\n    sum += n % 10;\n    n /= 10;\n}\nSystem.out.println(sum);",
+  "exam": "CSA",
+  "explanation": "迴圈每次取個位數相加後去掉個位：5 + 4 + 3 = 12。",
+  "order": 7,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "4.1"
+ },
+ {
+  "id": "csa-m08",
+  "answer": "B",
+  "choiceMono": true,
+  "choices": [
+   "*\n**\n***",
+   "***\n**\n*",
+   "***\n***\n***",
+   "**\n**\n**"
+  ],
+  "code": "for (int r = 1; r <= 3; r++)\n{\n    for (int c = r; c <= 3; c++)\n    {\n        System.out.print(\"*\");\n    }\n    System.out.println();\n}",
+  "exam": "CSA",
+  "explanation": "內層迴圈從 c = r 跑到 3，第 1、2、3 列分別印 3、2、1 個星號。",
+  "order": 8,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "4.2"
+ },
+ {
+  "id": "csa-m09",
+  "answer": "D",
+  "choices": [
+   "An ArithmeticException is thrown",
+   "A is printed",
+   "Nothing is printed",
+   "B is printed"
+  ],
+  "code": "int x = 0;\nif (x != 0 && 10 / x > 1)\n{\n    System.out.println(\"A\");\n}\nelse\n{\n    System.out.println(\"B\");\n}",
+  "exam": "CSA",
+  "explanation": "&& 會短路求值：`x != 0` 為 false，右邊的 `10 / x` 不會執行，所以進入 else 印出 B。",
+  "order": 9,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is the result of executing it?",
+  "topic": "3.5"
+ },
+ {
+  "id": "csa-m10",
+  "answer": "C",
+  "choices": [
+   "4 7",
+   "6 7",
+   "9 9",
+   "6 9"
+  ],
+  "code": "public class Counter\n{\n    private int count;\n\n    public Counter(int start)\n    { count = start; }\n\n    public void add(int n)\n    { count += n; }\n\n    public int getCount()\n    { return count; }\n}\n\n// In another class\nCounter c1 = new Counter(4);\nCounter c2 = c1;\nc2.add(3);\nc1.add(2);\nSystem.out.println(c1.getCount() + \" \" + c2.getCount());",
+  "exam": "CSA",
+  "explanation": "c2 = c1 讓兩個變數參考同一個物件。4 + 3 + 2 = 9，兩者都印 9。",
+  "order": 10,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the `Counter` class and the code segment that appears in another class. What is printed?",
+  "topic": "2.2"
+ },
+ {
+  "id": "csa-m11",
+  "answer": "C",
+  "choiceMono": true,
+  "choices": [
+   "Counter d = new Counter(5);",
+   "c.add(-5);",
+   "int k = c.count;",
+   "System.out.println(c.getCount());"
+  ],
+  "code": "",
+  "exam": "CSA",
+  "explanation": "count 是 private 實例變數，只能在 Counter 類別內存取，其他類別要用 getCount()。",
+  "order": 11,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Using the `Counter` class from the previous question, assume `Counter c = new Counter(0);` appears in a class other than `Counter`. Which of the following statements in that other class will cause a compile-time error?",
+  "topic": "5.8"
+ },
+ {
+  "id": "csa-m12",
+  "answer": "D",
+  "choices": [
+   "200",
+   "100102",
+   "201",
+   "202"
+  ],
+  "code": "public class Ticket\n{\n    private static int nextId = 100;\n    private int id;\n\n    public Ticket()\n    {\n        id = nextId;\n        nextId++;\n    }\n\n    public int getId()\n    { return id; }\n}\n\n// In another class\nTicket t1 = new Ticket();\nTicket t2 = new Ticket();\nTicket t3 = new Ticket();\nSystem.out.println(t1.getId() + t3.getId());",
+  "exam": "CSA",
+  "explanation": "static 變數由所有物件共用。t1 的 id 為 100、t3 為 102，兩個 int 相加得 202。",
+  "order": 12,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following class and code segment. What is printed?",
+  "topic": "5.7"
+ },
+ {
+  "id": "csa-m13",
+  "answer": "A",
+  "choices": [
+   "1",
+   "3",
+   "9",
+   "4"
+  ],
+  "code": "int[] arr = {3, 8, 1, 9, 4};\nint m = arr[0];\nfor (int k = 1; k < arr.length; k++)\n{\n    if (arr[k] < m)\n    {\n        m = arr[k];\n    }\n}\nSystem.out.println(m);",
+  "exam": "CSA",
+  "explanation": "這是找最小值的標準寫法，陣列中最小的是 1。",
+  "order": 13,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "6.2"
+ },
+ {
+  "id": "csa-m14",
+  "answer": "C",
+  "choices": [
+   "[2, 5]",
+   "[2, 4, 5, 4]",
+   "[2, 4, 5]",
+   "An IndexOutOfBoundsException is thrown"
+  ],
+  "code": "ArrayList<Integer> list = new ArrayList<Integer>();\nlist.add(2);\nlist.add(4);\nlist.add(4);\nlist.add(5);\nlist.add(4);\nfor (int i = 0; i < list.size(); i++)\n{\n    if (list.get(i) == 4)\n    {\n        list.remove(i);\n    }\n}\nSystem.out.println(list);",
+  "exam": "CSA",
+  "explanation": "移除索引 1 的 4 之後，後面元素左移，原本的第二個 4 移到索引 1 但 i 已前進到 2 而被跳過；之後在索引 3 移除最後的 4，結果為 [2, 4, 5]。",
+  "order": 14,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "7.3"
+ },
+ {
+  "id": "csa-m15",
+  "answer": "A",
+  "choices": [
+   "13",
+   "15",
+   "12",
+   "16"
+  ],
+  "code": "int[][] grid = { {1, 2, 3},\n                 {4, 5, 6},\n                 {7, 8, 9} };\nint total = 0;\nfor (int r = 0; r < grid.length; r++)\n{\n    total += grid[r][r % 2];\n}\nSystem.out.println(total);",
+  "exam": "CSA",
+  "explanation": "r = 0 取 grid[0][0] = 1，r = 1 取 grid[1][1] = 5，r = 2 取 grid[2][0] = 7，總和 13。",
+  "order": 15,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Consider the following code segment. What is printed?",
+  "topic": "8.2"
+ },
+ {
+  "id": "csp-m01",
+  "answer": "B",
+  "choices": [
+   "4 7",
+   "7 4",
+   "11 4",
+   "11 7"
+  ],
+  "code": "x ← 4\ny ← 7\nx ← x + y\ny ← x - y\nx ← x - y\nDISPLAY(x)\nDISPLAY(y)",
+  "exam": "CSP",
+  "explanation": "x 變 11，y = 11 − 7 = 4，x = 11 − 4 = 7，兩個變數的值交換了。",
+  "order": 1,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.1"
+ },
+ {
+  "id": "csp-m02",
+  "answer": "C",
+  "choices": [
+   "2",
+   "4",
+   "3",
+   "5"
+  ],
+  "code": "nums ← [5, 2, 8, 2, 6]\ncount ← 0\nFOR EACH n IN nums\n{\n   IF (n > 4)\n   {\n      count ← count + 1\n   }\n}\nDISPLAY(count)",
+  "exam": "CSP",
+  "explanation": "大於 4 的元素有 5、8、6，共 3 個。",
+  "order": 2,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.10"
+ },
+ {
+  "id": "csp-m03",
+  "answer": "A",
+  "choices": [
+   "[a, x, b, d]",
+   "[a, x, c, d]",
+   "[a, b, x, d]",
+   "[a, x, b, c]"
+  ],
+  "code": "letters ← [\"a\", \"b\", \"c\", \"d\"]\nINSERT(letters, 2, \"x\")\nREMOVE(letters, 4)\nDISPLAY(letters)",
+  "exam": "CSP",
+  "explanation": "插入後為 [a, x, b, c, d]，移除第 4 個元素 c，得到 [a, x, b, d]。",
+  "order": 3,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed? (List indices start at 1.)",
+  "topic": "3.10"
+ },
+ {
+  "id": "csp-m04",
+  "answer": "B",
+  "choices": [
+   "27",
+   "81",
+   "50",
+   "243"
+  ],
+  "code": "n ← 1\nREPEAT UNTIL (n > 50)\n{\n   n ← n * 3\n}\nDISPLAY(n)",
+  "exam": "CSP",
+  "explanation": "n 依序為 3、9、27、81；81 > 50 時停止。",
+  "order": 4,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.8"
+ },
+ {
+  "id": "csp-m05",
+  "answer": "A",
+  "choices": [
+   "6",
+   "3",
+   "12",
+   "18"
+  ],
+  "code": "PROCEDURE mystery(a, b)\n{\n   IF (a MOD b = 0)\n   {\n      RETURN(b)\n   }\n   RETURN(mystery(b, a MOD b))\n}\n\nDISPLAY(mystery(48, 18))",
+  "exam": "CSP",
+  "explanation": "這是輾轉相除法求最大公因數：(48,18) → (18,12) → (12,6)，12 MOD 6 = 0，回傳 6。",
+  "order": 5,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed by the call below?",
+  "topic": "3.13"
+ },
+ {
+  "id": "csp-m06",
+  "answer": "D",
+  "choices": [
+   "(age > 13) AND (age < 19)",
+   "(age ≥ 13) OR (age ≤ 19)",
+   "NOT (age < 13) OR (age > 19)",
+   "(age ≥ 13) AND (age ≤ 19)"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "兩個條件都要成立才用 AND，且包含端點要用 ≥ 與 ≤。C 選項的 NOT 只作用在前半段。",
+  "order": 6,
+  "sample": true,
+  "section": "mcq",
+  "stem": "The variable `age` holds a whole number. Which expression evaluates to `true` exactly when `age` is between 13 and 19, inclusive?",
+  "topic": "3.5"
+ },
+ {
+  "id": "csp-m07",
+  "answer": "C",
+  "choices": [
+   "The list contains only numbers",
+   "The list has an even number of elements",
+   "The list is sorted",
+   "The list contains no duplicate values"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "二分搜尋每次比較中間值後丟掉一半，前提是資料已排序。",
+  "order": 7,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following must be true about a list in order to use a binary search on it?",
+  "topic": "3.11"
+ },
+ {
+  "id": "csp-m08",
+  "answer": "B",
+  "choices": [
+   "Finding the largest number in a list of 100 numbers",
+   "Finding a good delivery route through 200 cities when checking every possible route would take far too long",
+   "Sorting a list of student names alphabetically",
+   "Determining whether a number is even"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "啟發式演算法用在找精確最佳解要花不合理時間的問題，例如路線規劃，接受「夠好」的答案。",
+  "order": 8,
+  "sample": true,
+  "section": "mcq",
+  "stem": "For which of the following situations is using a heuristic most appropriate?",
+  "topic": "3.17"
+ },
+ {
+  "id": "csp-m09",
+  "answer": "A",
+  "choices": [
+   "182",
+   "180",
+   "214",
+   "118"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "128 + 32 + 16 + 4 + 2 = 182。",
+  "order": 9,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is the decimal (base 10) value of the binary number 10110110?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m10",
+  "answer": "C",
+  "choices": [
+   "7 + 8",
+   "9 + 6",
+   "12 + 5",
+   "10 + 4"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "4 個位元最大只能表示 15，12 + 5 = 17 超出範圍。",
+  "order": 10,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A program stores whole numbers using 4 bits (values 0 through 15). Which of the following additions will result in an overflow error?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m11",
+  "answer": "D",
+  "choices": [
+   "A photo posted on a social media site",
+   "A song streamed on a phone",
+   "A video call between friends",
+   "A spreadsheet of bank transactions"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "財務資料必須能完全還原，任何位元遺失都會造成錯誤，因此需要無損壓縮。",
+  "order": 11,
+  "sample": true,
+  "section": "mcq",
+  "stem": "For which of the following files is lossless compression most necessary?",
+  "topic": "2.2"
+ },
+ {
+  "id": "csp-m12",
+  "answer": [
+   "B",
+   "C"
+  ],
+  "choices": [
+   "The color values of each pixel",
+   "The date the photo was taken",
+   "The GPS location where the photo was taken",
+   "The people who appear in the photo"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "Metadata 是「描述資料的資料」，例如拍攝日期與地點；像素顏色與畫面中的人物是照片本身的內容。",
+  "multi": true,
+  "order": 12,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which TWO of the following are examples of metadata for a digital photo? Select two answers.",
+  "topic": "2.3"
+ },
+ {
+  "id": "csp-m13",
+  "answer": "B",
+  "choices": [
+   "6",
+   "7",
+   "8",
+   "100"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "6 個位元只能表示 64 種，7 個位元可表示 128 種，足夠 100 個。",
+  "order": 13,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is the minimum number of bits needed to give each of 100 different items a unique binary code?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m14",
+  "answer": "C",
+  "choices": [
+   "It assigns a unique address to each device on the network",
+   "It translates domain names into IP addresses",
+   "It breaks data into packets and makes sure all packets arrive and are reassembled in order",
+   "It encrypts data so only the recipient can read it"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "TCP 負責切封包、確認送達並依序重組；位址由 IP 處理，網域名稱由 DNS 轉換。",
+  "order": 14,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following best describes the role of TCP when data is sent over the Internet?",
+  "topic": "4.1"
+ },
+ {
+  "id": "csp-m15",
+  "answer": "A",
+  "choices": [
+   "Redundant paths between devices, so data can be rerouted if one connection fails",
+   "The use of open, nonproprietary protocols",
+   "The use of a hierarchical system of domain names",
+   "The large number of people who use it"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "容錯能力來自備援路徑：一條連線斷了，資料可以改走其他路線。",
+  "order": 15,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following characteristics of the Internet most directly makes it fault tolerant?",
+  "topic": "4.2"
+ },
+ {
+  "id": "csp-m16",
+  "answer": "D",
+  "choices": [
+   "1.5",
+   "3",
+   "70",
+   "2.4"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "循序執行 120 秒；平行執行時間取最長的 50 秒；speedup = 120 / 50 = 2.4。",
+  "order": 16,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A program has three independent tasks that take 30, 50, and 40 seconds when run one after another on one processor. If the three tasks run in parallel on three processors, what is the speedup?",
+  "topic": "4.3"
+ },
+ {
+  "id": "csp-m17",
+  "answer": "B",
+  "choices": [
+   "A company uses targeted advertising based on browsing history",
+   "Students in a rural area cannot complete online homework because reliable high-speed Internet is unavailable",
+   "A programmer uses open-source code in a new app",
+   "A social media site removes posts that violate its rules"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "數位落差指不同族群取得網路與運算資源的機會不平等。",
+  "order": 17,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following is an example of the digital divide?",
+  "topic": "5.2"
+ },
+ {
+  "id": "csp-m18",
+  "answer": "C",
+  "choices": [
+   "a computer virus",
+   "a DDoS attack",
+   "phishing",
+   "public key encryption"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "偽裝成可信機構騙取帳密，是網路釣魚（phishing）。",
+  "order": 18,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A user receives an email that appears to be from their bank asking them to \"verify your account\" by clicking a link and entering their password on a site that looks like the bank's. This is an example of",
+  "topic": "5.6"
+ },
+ {
+  "id": "csp-m19",
+  "answer": "D",
+  "choices": [
+   "Bob's private key",
+   "Bob's public key",
+   "Alice's private key",
+   "Alice's public key"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "用收件者 Alice 的公鑰加密，只有持有對應私鑰的 Alice 能解密。",
+  "order": 19,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Bob wants to send Alice a message using public key encryption so that only Alice can read it. Which key should Bob use to encrypt the message?",
+  "topic": "5.6"
+ },
+ {
+  "id": "csp-m20",
+  "answer": "B",
+  "choices": [
+   "They make the program run faster",
+   "They describe how code segments work for the programmer and others, and do not affect how the program runs",
+   "They are required for a program to compile",
+   "They prevent other people from copying the code"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "註解是給人看的說明，不會被執行，也不影響程式效能。",
+  "order": 20,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following best describes the purpose of comments (program documentation) in a program?",
+  "topic": "1.5"
+ }
+]

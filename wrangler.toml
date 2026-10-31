@@ -1,0 +1,18 @@
+name = "ap-cs-mock-exam"
+main = "./worker/index.js"
+compatibility_date = "2026-10-30"
+
+[assets]
+directory = "./app/"
+binding = "ASSETS"
+run_worker_first = ["/api/*", "/"]
+not_found_handling = "none"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ap-cs-mock-exam-db"
+database_id = "REPLACE_AFTER_wrangler_d1_create"
+migrations_dir = "migrations"
+
+[vars]
+ANTHROPIC_MODEL = "claude-haiku-5-5"

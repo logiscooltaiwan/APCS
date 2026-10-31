@@ -1,0 +1,63 @@
+[
+ {
+  "name": "模擬考1030",
+  "exam": "CSA",
+  "mcqMin": 90,
+  "frqMin": 90,
+  "mcqIds": [
+   "csa-m11",
+   "csa2-m25",
+   "csa2-m32",
+   "csa2-m06",
+   "csa-m07",
+   "csa2-m37",
+   "csa-m01",
+   "csa2-m15",
+   "csa2-m28",
+   "csa2-m35",
+   "csa-m10",
+   "csa2-m08",
+   "csa2-m31",
+   "csa2-m19",
+   "csa-m12",
+   "csa2-m18",
+   "csa2-m40",
+   "csa2-m03",
+   "csa2-m11",
+   "csa-m05",
+   "csa-m04",
+   "csa-m06",
+   "csa2-m39",
+   "csa2-m30",
+   "csa2-m02",
+   "csa2-m29",
+   "csa2-m33",
+   "csa2-m38",
+   "csa2-m05",
+   "csa2-m07",
+   "csa-m15",
+   "csa2-m21",
+   "csa-m09",
+   "csa2-m10",
+   "csa2-m01",
+   "csa-m14",
+   "csa2-m26",
+   "csa2-m27",
+   "csa2-m23",
+   "csa-m08",
+   "csa2-m17",
+   "csa2-m04"
+  ],
+  "frqIds": [
+   "csa2-f1",
+   "csa-f2",
+   "csa2-f3",
+   "csa2-f4"
+  ],
+  "studentIds": [
+   "test-student"
+  ],
+  "createdAt": 1793363942837,
+  "id": "3345e169ac644286b795a12f0b67015b"
+ }
+]

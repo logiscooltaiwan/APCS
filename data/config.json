@@ -1,0 +1,9 @@
+{
+ "CSA": {
+  "frqMin": 90,
+  "mcqMin": 90
+ },
+ "CSP": {
+  "mcqMin": 90
+ }
+}

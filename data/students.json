@@ -1,0 +1,23 @@
+[
+ {
+  "id": "test-student",
+  "cls": "測試",
+  "createdAt": 1792000000000,
+  "exams": [
+   "CSA",
+   "CSP"
+  ],
+  "name": "測試考生",
+  "pw": "9abcf6c6a5a2ae8a8de7bbe395a491387d4238bc774c6842864ab09b1deccf8d"
+ },
+ {
+  "name": "測試考生2",
+  "pw": "6ac098116fcd3830bca4e56c69d3ad0a171799978df3d0cdd5c519353df0d25a",
+  "cls": "",
+  "exams": [
+   "CSA"
+  ],
+  "createdAt": 1793365690214,
+  "id": "f2f2e2eb311e468488e54c58b5e16013"
+ }
+]

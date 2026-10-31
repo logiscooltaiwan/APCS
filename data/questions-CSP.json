@@ -1,0 +1,366 @@
+[
+ {
+  "id": "csp-m01",
+  "answer": "B",
+  "choices": [
+   "4 7",
+   "7 4",
+   "11 4",
+   "11 7"
+  ],
+  "code": "x ← 4\ny ← 7\nx ← x + y\ny ← x - y\nx ← x - y\nDISPLAY(x)\nDISPLAY(y)",
+  "exam": "CSP",
+  "explanation": "x 變 11，y = 11 − 7 = 4，x = 11 − 4 = 7，兩個變數的值交換了。",
+  "order": 1,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.1"
+ },
+ {
+  "id": "csp-m02",
+  "answer": "C",
+  "choices": [
+   "2",
+   "4",
+   "3",
+   "5"
+  ],
+  "code": "nums ← [5, 2, 8, 2, 6]\ncount ← 0\nFOR EACH n IN nums\n{\n   IF (n > 4)\n   {\n      count ← count + 1\n   }\n}\nDISPLAY(count)",
+  "exam": "CSP",
+  "explanation": "大於 4 的元素有 5、8、6，共 3 個。",
+  "order": 2,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.10"
+ },
+ {
+  "id": "csp-m03",
+  "answer": "A",
+  "choices": [
+   "[a, x, b, d]",
+   "[a, x, c, d]",
+   "[a, b, x, d]",
+   "[a, x, b, c]"
+  ],
+  "code": "letters ← [\"a\", \"b\", \"c\", \"d\"]\nINSERT(letters, 2, \"x\")\nREMOVE(letters, 4)\nDISPLAY(letters)",
+  "exam": "CSP",
+  "explanation": "插入後為 [a, x, b, c, d]，移除第 4 個元素 c，得到 [a, x, b, d]。",
+  "order": 3,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed? (List indices start at 1.)",
+  "topic": "3.10"
+ },
+ {
+  "id": "csp-m04",
+  "answer": "B",
+  "choices": [
+   "27",
+   "81",
+   "50",
+   "243"
+  ],
+  "code": "n ← 1\nREPEAT UNTIL (n > 50)\n{\n   n ← n * 3\n}\nDISPLAY(n)",
+  "exam": "CSP",
+  "explanation": "n 依序為 3、9、27、81；81 > 50 時停止。",
+  "order": 4,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed after the following code segment is executed?",
+  "topic": "3.8"
+ },
+ {
+  "id": "csp-m05",
+  "answer": "A",
+  "choices": [
+   "6",
+   "3",
+   "12",
+   "18"
+  ],
+  "code": "PROCEDURE mystery(a, b)\n{\n   IF (a MOD b = 0)\n   {\n      RETURN(b)\n   }\n   RETURN(mystery(b, a MOD b))\n}\n\nDISPLAY(mystery(48, 18))",
+  "exam": "CSP",
+  "explanation": "這是輾轉相除法求最大公因數：(48,18) → (18,12) → (12,6)，12 MOD 6 = 0，回傳 6。",
+  "order": 5,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is displayed by the call below?",
+  "topic": "3.13"
+ },
+ {
+  "id": "csp-m06",
+  "answer": "D",
+  "choices": [
+   "(age > 13) AND (age < 19)",
+   "(age ≥ 13) OR (age ≤ 19)",
+   "NOT (age < 13) OR (age > 19)",
+   "(age ≥ 13) AND (age ≤ 19)"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "兩個條件都要成立才用 AND，且包含端點要用 ≥ 與 ≤。C 選項的 NOT 只作用在前半段。",
+  "order": 6,
+  "sample": true,
+  "section": "mcq",
+  "stem": "The variable `age` holds a whole number. Which expression evaluates to `true` exactly when `age` is between 13 and 19, inclusive?",
+  "topic": "3.5"
+ },
+ {
+  "id": "csp-m07",
+  "answer": "C",
+  "choices": [
+   "The list contains only numbers",
+   "The list has an even number of elements",
+   "The list is sorted",
+   "The list contains no duplicate values"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "二分搜尋每次比較中間值後丟掉一半，前提是資料已排序。",
+  "order": 7,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following must be true about a list in order to use a binary search on it?",
+  "topic": "3.11"
+ },
+ {
+  "id": "csp-m08",
+  "answer": "B",
+  "choices": [
+   "Finding the largest number in a list of 100 numbers",
+   "Finding a good delivery route through 200 cities when checking every possible route would take far too long",
+   "Sorting a list of student names alphabetically",
+   "Determining whether a number is even"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "啟發式演算法用在找精確最佳解要花不合理時間的問題，例如路線規劃，接受「夠好」的答案。",
+  "order": 8,
+  "sample": true,
+  "section": "mcq",
+  "stem": "For which of the following situations is using a heuristic most appropriate?",
+  "topic": "3.17"
+ },
+ {
+  "id": "csp-m09",
+  "answer": "A",
+  "choices": [
+   "182",
+   "180",
+   "214",
+   "118"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "128 + 32 + 16 + 4 + 2 = 182。",
+  "order": 9,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is the decimal (base 10) value of the binary number 10110110?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m10",
+  "answer": "C",
+  "choices": [
+   "7 + 8",
+   "9 + 6",
+   "12 + 5",
+   "10 + 4"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "4 個位元最大只能表示 15，12 + 5 = 17 超出範圍。",
+  "order": 10,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A program stores whole numbers using 4 bits (values 0 through 15). Which of the following additions will result in an overflow error?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m11",
+  "answer": "D",
+  "choices": [
+   "A photo posted on a social media site",
+   "A song streamed on a phone",
+   "A video call between friends",
+   "A spreadsheet of bank transactions"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "財務資料必須能完全還原，任何位元遺失都會造成錯誤，因此需要無損壓縮。",
+  "order": 11,
+  "sample": true,
+  "section": "mcq",
+  "stem": "For which of the following files is lossless compression most necessary?",
+  "topic": "2.2"
+ },
+ {
+  "id": "csp-m12",
+  "answer": [
+   "B",
+   "C"
+  ],
+  "choices": [
+   "The color values of each pixel",
+   "The date the photo was taken",
+   "The GPS location where the photo was taken",
+   "The people who appear in the photo"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "Metadata 是「描述資料的資料」，例如拍攝日期與地點；像素顏色與畫面中的人物是照片本身的內容。",
+  "multi": true,
+  "order": 12,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which TWO of the following are examples of metadata for a digital photo? Select two answers.",
+  "topic": "2.3"
+ },
+ {
+  "id": "csp-m13",
+  "answer": "B",
+  "choices": [
+   "6",
+   "7",
+   "8",
+   "100"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "6 個位元只能表示 64 種，7 個位元可表示 128 種，足夠 100 個。",
+  "order": 13,
+  "sample": true,
+  "section": "mcq",
+  "stem": "What is the minimum number of bits needed to give each of 100 different items a unique binary code?",
+  "topic": "2.1"
+ },
+ {
+  "id": "csp-m14",
+  "answer": "C",
+  "choices": [
+   "It assigns a unique address to each device on the network",
+   "It translates domain names into IP addresses",
+   "It breaks data into packets and makes sure all packets arrive and are reassembled in order",
+   "It encrypts data so only the recipient can read it"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "TCP 負責切封包、確認送達並依序重組；位址由 IP 處理，網域名稱由 DNS 轉換。",
+  "order": 14,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following best describes the role of TCP when data is sent over the Internet?",
+  "topic": "4.1"
+ },
+ {
+  "id": "csp-m15",
+  "answer": "A",
+  "choices": [
+   "Redundant paths between devices, so data can be rerouted if one connection fails",
+   "The use of open, nonproprietary protocols",
+   "The use of a hierarchical system of domain names",
+   "The large number of people who use it"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "容錯能力來自備援路徑：一條連線斷了，資料可以改走其他路線。",
+  "order": 15,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following characteristics of the Internet most directly makes it fault tolerant?",
+  "topic": "4.2"
+ },
+ {
+  "id": "csp-m16",
+  "answer": "D",
+  "choices": [
+   "1.5",
+   "3",
+   "70",
+   "2.4"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "循序執行 120 秒；平行執行時間取最長的 50 秒；speedup = 120 / 50 = 2.4。",
+  "order": 16,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A program has three independent tasks that take 30, 50, and 40 seconds when run one after another on one processor. If the three tasks run in parallel on three processors, what is the speedup?",
+  "topic": "4.3"
+ },
+ {
+  "id": "csp-m17",
+  "answer": "B",
+  "choices": [
+   "A company uses targeted advertising based on browsing history",
+   "Students in a rural area cannot complete online homework because reliable high-speed Internet is unavailable",
+   "A programmer uses open-source code in a new app",
+   "A social media site removes posts that violate its rules"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "數位落差指不同族群取得網路與運算資源的機會不平等。",
+  "order": 17,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following is an example of the digital divide?",
+  "topic": "5.2"
+ },
+ {
+  "id": "csp-m18",
+  "answer": "C",
+  "choices": [
+   "a computer virus",
+   "a DDoS attack",
+   "phishing",
+   "public key encryption"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "偽裝成可信機構騙取帳密，是網路釣魚（phishing）。",
+  "order": 18,
+  "sample": true,
+  "section": "mcq",
+  "stem": "A user receives an email that appears to be from their bank asking them to \"verify your account\" by clicking a link and entering their password on a site that looks like the bank's. This is an example of",
+  "topic": "5.6"
+ },
+ {
+  "id": "csp-m19",
+  "answer": "D",
+  "choices": [
+   "Bob's private key",
+   "Bob's public key",
+   "Alice's private key",
+   "Alice's public key"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "用收件者 Alice 的公鑰加密，只有持有對應私鑰的 Alice 能解密。",
+  "order": 19,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Bob wants to send Alice a message using public key encryption so that only Alice can read it. Which key should Bob use to encrypt the message?",
+  "topic": "5.6"
+ },
+ {
+  "id": "csp-m20",
+  "answer": "B",
+  "choices": [
+   "They make the program run faster",
+   "They describe how code segments work for the programmer and others, and do not affect how the program runs",
+   "They are required for a program to compile",
+   "They prevent other people from copying the code"
+  ],
+  "code": "",
+  "exam": "CSP",
+  "explanation": "註解是給人看的說明，不會被執行，也不影響程式效能。",
+  "order": 20,
+  "sample": true,
+  "section": "mcq",
+  "stem": "Which of the following best describes the purpose of comments (program documentation) in a program?",
+  "topic": "1.5"
+ }
+]
